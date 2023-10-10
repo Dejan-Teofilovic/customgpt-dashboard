@@ -1,12 +1,5 @@
-export default [
-  {
-    title: 'Home',
-    to: { name: 'index' },
-    icon: { icon: 'tabler-smart-home' },
-  },
-  {
-    title: 'Second page',
-    to: { name: 'second-page' },
-    icon: { icon: 'tabler-file' },
-  },
-]
+import dashboard from './dashboard'
+import project from './project'
+import support from './support'
+
+export default [...dashboard, ...project, ...support]
