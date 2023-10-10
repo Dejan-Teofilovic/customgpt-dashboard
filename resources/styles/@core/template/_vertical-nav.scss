@@ -1,0 +1,27 @@
+@use "vuetify/lib/styles/tools/elevation" as elevation;
+@use "@configured-variables" as variables;
+
+.layout-nav-type-vertical {
+  // 👉 Layout Vertical nav
+  .layout-vertical-nav {
+    .nav-header {
+      .app-logo {
+        .app-title {
+          font-size: 22px;
+        }
+      }
+    }
+
+    // 👉 Nav group active
+    .nav-group.active {
+      > .nav-group-label {
+        color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
+        font-weight: 600;
+      }
+    }
+
+    .nav-section-title .placeholder-icon {
+      margin-inline-start: 0.3rem;
+    }
+  }
+}

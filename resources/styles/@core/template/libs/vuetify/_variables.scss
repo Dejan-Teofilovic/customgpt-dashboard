@@ -1,0 +1,197 @@
+$shadow-key-umbra-opacity-custom: var(--v-shadow-key-umbra-opacity);
+$shadow-key-penumbra-opacity-custom: var(--v-shadow-key-penumbra-opacity);
+$shadow-key-ambient-opacity-custom: var(--v-shadow-key-ambient-opacity);
+$font-family-custom: "Public Sans",sans-serif,-apple-system,blinkmacsystemfont,"Segoe UI",roboto,"Helvetica Neue",arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+
+@forward "../../../base/libs/vuetify/variables"  with (
+  $body-font-family: $font-family-custom !default,
+  $border-radius-root: 6px !default,
+
+  $shadow-key-umbra: (
+    0: (0 0 0 0 var(--v-shadow-key-umbra-opacity)),
+    1: (0 2px 4px 1px var(--v-shadow-key-umbra-opacity)),
+    2: (0 3px 5px 2px var(--v-shadow-key-umbra-opacity)),
+    3: (0 3px 6px 2px var(--v-shadow-key-umbra-opacity)),
+    4: (0 2px 7px 1px var(--v-shadow-key-umbra-opacity)),
+    5: (0 3px 8px 1px var(--v-shadow-key-umbra-opacity)),
+    6: (0 3px 9px 1px var(--v-shadow-key-umbra-opacity)),
+    7: (0 4px 10px 2px var(--v-shadow-key-umbra-opacity)),
+    8: (0 5px 11px 3px var(--v-shadow-key-umbra-opacity)),
+    9: (0 5px 12px 3px var(--v-shadow-key-umbra-opacity)),
+    10: (0 6px 13px 3px var(--v-shadow-key-umbra-opacity)),
+    11: (0 6px 14px 4px var(--v-shadow-key-umbra-opacity)),
+    12: (0 7px 15px 4px var(--v-shadow-key-umbra-opacity)),
+    13: (0 7px 16px 4px var(--v-shadow-key-umbra-opacity)),
+    14: (0 7px 17px 4px var(--v-shadow-key-umbra-opacity)),
+    15: (0 8px 18px 5px var(--v-shadow-key-umbra-opacity)),
+    16: (0 8px 19px 5px var(--v-shadow-key-umbra-opacity)),
+    17: (0 8px 20px 5px var(--v-shadow-key-umbra-opacity)),
+    18: (0 9px 21px 5px var(--v-shadow-key-umbra-opacity)),
+    19: (0 9px 22px 6px var(--v-shadow-key-umbra-opacity)),
+    20: (0 10px 23px 6px var(--v-shadow-key-umbra-opacity)),
+    21: (0 10px 24px 6px var(--v-shadow-key-umbra-opacity)),
+    22: (0 10px 25px 6px var(--v-shadow-key-umbra-opacity)),
+    23: (0 11px 26px 7px var(--v-shadow-key-umbra-opacity)),
+    24: (0 11px 27px 7px var(--v-shadow-key-umbra-opacity))
+  ) !default,
+
+  $shadow-key-penumbra: (
+    0: (0 0 0 0 $shadow-key-penumbra-opacity-custom),
+    1: (0 4px 3px $shadow-key-penumbra-opacity-custom),
+    2: (0 5px 3px $shadow-key-penumbra-opacity-custom),
+    3: (0 6px 4px $shadow-key-penumbra-opacity-custom),
+
+    4: (0 7px 4px $shadow-key-penumbra-opacity-custom),
+    5: (0 8px 6px $shadow-key-penumbra-opacity-custom),
+    6: (0 9px 8px $shadow-key-penumbra-opacity-custom),
+
+    7: (0 10px 9px 1px $shadow-key-penumbra-opacity-custom),
+    8: (0 11px 8px 1px $shadow-key-penumbra-opacity-custom),
+    9: (0 12px 9px 1px $shadow-key-penumbra-opacity-custom),
+    10: (0 13px 10px 1px $shadow-key-penumbra-opacity-custom),
+    11: (0 14px 11px 1px $shadow-key-penumbra-opacity-custom),
+    12: (0 15px 12px 2px $shadow-key-penumbra-opacity-custom),
+    13: (0 16px 13px 2px $shadow-key-penumbra-opacity-custom),
+    14: (0 17px 14px 2px $shadow-key-penumbra-opacity-custom),
+    15: (0 18px 15px 2px $shadow-key-penumbra-opacity-custom),
+    16: (0 19px 16px 2px $shadow-key-penumbra-opacity-custom),
+    17: (0 20px 17px 2px $shadow-key-penumbra-opacity-custom),
+    18: (0 21px 18px 2px $shadow-key-penumbra-opacity-custom),
+    19: (0 22px 19px 2px $shadow-key-penumbra-opacity-custom),
+    20: (0 23px 20px 3px $shadow-key-penumbra-opacity-custom),
+    21: (0 24px 21px 3px $shadow-key-penumbra-opacity-custom),
+    22: (0 25px 22px 3px $shadow-key-penumbra-opacity-custom),
+    23: (0 26px 23px 3px $shadow-key-penumbra-opacity-custom),
+    24: (0 27px 24px 3px $shadow-key-penumbra-opacity-custom)
+  ) !default,
+
+  $shadow-key-ambient: (
+    0: (0 0 0 0 $shadow-key-ambient-opacity-custom),
+    1: (0 1px 3px 2px $shadow-key-ambient-opacity-custom),
+    2: (0 1px 4px 2px $shadow-key-ambient-opacity-custom),
+    3: (0 1px 4px 2px $shadow-key-ambient-opacity-custom),
+
+    4: (0 1px 4px 2px $shadow-key-ambient-opacity-custom),
+    5: (0 1px 5px 4px $shadow-key-ambient-opacity-custom),
+    6: (0 1px 6px 4px $shadow-key-ambient-opacity-custom),
+
+    7: (0 2px 7px 4px $shadow-key-ambient-opacity-custom),
+    8: (0 3px 8px 4px $shadow-key-ambient-opacity-custom),
+    9: (0 3px 9px 5px $shadow-key-ambient-opacity-custom),
+    10: (0 4px 10px 5px $shadow-key-ambient-opacity-custom),
+    11: (0 4px 11px 5px $shadow-key-ambient-opacity-custom),
+    12: (0 5px 12px 5px $shadow-key-ambient-opacity-custom),
+    13: (0 5px 13px 6px $shadow-key-ambient-opacity-custom),
+    14: (0 5px 14px 6px $shadow-key-ambient-opacity-custom),
+    15: (0 6px 15px 6px $shadow-key-ambient-opacity-custom),
+    16: (0 6px 16px 6px $shadow-key-ambient-opacity-custom),
+    17: (0 6px 17px 7px $shadow-key-ambient-opacity-custom),
+    18: (0 7px 18px 7px $shadow-key-ambient-opacity-custom),
+    19: (0 7px 19px 7px $shadow-key-ambient-opacity-custom),
+    20: (0 8px 20px 7px $shadow-key-ambient-opacity-custom),
+    21: (0 8px 21px 7px $shadow-key-ambient-opacity-custom),
+    22: (0 8px 22px 7px $shadow-key-ambient-opacity-custom),
+    23: (0 9px 23px 7px $shadow-key-ambient-opacity-custom),
+    24: (0 9px 24px 7px $shadow-key-ambient-opacity-custom)
+  ) !default,
+
+  // 👉 Typography
+  $typography: (
+    "h1": (
+      "weight": 500,
+      "line-height": 7rem
+    ),
+    "h2": (
+      "weight": 500,
+      "line-height": 4.5rem
+    ),
+    "h3": (
+      "weight": 500,
+      "line-height": 3.5rem
+    ),
+    "h4": (
+      "weight": 500,
+      "line-height": 2.625rem
+    ),
+    "h5": (
+      "weight": 500,
+      "line-height": 2rem
+    ),
+    "h6":(
+      "line-height":1.5rem
+    ),
+    "body-2": (
+      "line-height": 1.5
+    ),
+    "subtitle-2": (
+      "line-height": 1.375rem
+    ),
+    "caption":(
+      "line-height": 1.25rem
+    ),
+    "overline": (
+      "weight": 400,
+      "line-height": 1.125rem,
+      "letter-spacing": 0.0625rem,
+    )
+  ) !default,
+
+  // 👉 Alert
+  $alert-density: ("default": 0, "comfortable": -0.75, "compact": -2) !default,
+  $alert-title-font-size: 1.125rem !default,
+  $alert-title-font-weight: 600 !default,
+  $alert-title-line-height: 1.5rem !default,
+  $alert-border-opacity: 0.38 !default,
+  $alert-prepend-margin-inline-end: 0.75rem !default,
+
+  // 👉 Chip
+  $chip-font-size: 0.9375rem !default,
+  $chip-label-border-radius: 0.25rem !default,
+
+  // 👉 Button
+  $button-height: 38px !default,
+  $button-padding-ratio: 1.9 !default,
+  $button-elevation: ("default": 2, "hover": 4, "active": 2) !default,
+
+  // 👉 Dialog
+  $dialog-card-header-padding: 20px 24px 0 !default,
+  $dialog-card-header-text-padding-top: 20px !default,
+  $dialog-card-text-padding: 20px 24px 20px !default,
+
+  // 👉 Card
+  $card-text-font-size: 1rem !default,
+  $card-title-line-height: 1.65rem !default,
+  $card-text-padding: 24px !default,
+  $card-text-line-height:1.5 !default,
+  $card-item-padding: 24px !default,
+  $card-subtitle-opacity: 1 !default,
+
+  // 👉 Expansion panel
+  $expansion-panel-title-padding: 16px 18px !default,
+  $expansion-panel-title-font-size: 1rem !default,
+  $expansion-panel-color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity)) !default,
+  $expansion-panel-active-title-min-height: 47px !default,
+  $expansion-panel-title-min-height: 47px !default,
+  $expansion-panel-text-padding: 0 18px 12px !default,
+
+  // 👉 VList
+  $list-border-radius: 6px !default,
+
+  // 👉 VPagination
+  $pagination-item-margin: 0.1875rem !default,
+
+  // 👉 Snackbar
+  $snackbar-background:#212121 !default,
+  $snackbar-color: rgb(var(--v-theme-on-primary)) !default,
+
+  // 👉 VTabs
+  $tabs-height: 42px !default,
+
+  // 👉 Tooltip
+  $tooltip-background-color: #212121 !default,
+  $tooltip-font-size: 0.875rem !default,
+
+  // 👉 VTimeline
+  $timeline-dot-size: 34px !default,
+  $timeline-dot-divider-background: rgba(var(--v-border-color), 0.08) !default,
+);

@@ -1,0 +1,16 @@
+.carousel-delimiter-top-end {
+  .v-carousel__controls {
+    justify-content: end;
+    inset-block-start: 0;
+    padding-inline: 1rem;
+
+    .v-btn--icon.v-btn--density-default {
+      block-size: calc(var(--v-btn-height) + 0px);
+      inline-size: calc(var(--v-btn-height) + 0px);
+
+      .v-btn__overlay {
+        opacity: 0;
+      }
+    }
+  }
+}
