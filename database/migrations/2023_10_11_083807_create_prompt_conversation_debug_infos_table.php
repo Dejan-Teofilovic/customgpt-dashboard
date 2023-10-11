@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('prompt_conversation_debug_info', function (Blueprint $table) {
+        Schema::create('prompt_conversation_debug_infos', function (Blueprint $table) {
             $table->id();
             $table->json('messages')->nullable();
             $table->string('status', 100)->nullable(false)->default('success');
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('prompt_conversation_debug_info');
+        Schema::dropIfExists('prompt_conversation_debug_infos');
     }
 };

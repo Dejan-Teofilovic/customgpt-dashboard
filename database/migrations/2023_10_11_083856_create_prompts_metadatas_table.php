@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('prompts_metadata', function (Blueprint $table) {
+        Schema::create('prompts_metadatas', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->softDeletes();
@@ -39,6 +39,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('prompts_metadata');
+        Schema::dropIfExists('prompts_metadatas');
     }
 };
