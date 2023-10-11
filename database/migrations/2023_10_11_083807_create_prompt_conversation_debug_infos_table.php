@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('prompt_conversation_debug_infos', function (Blueprint $table) {
             $table->id();
             $table->json('messages')->nullable();
+            $table->json('debug_info')->nullable();
             $table->string('status', 100)->nullable(false)->default('success');
             $table->longText('error_message')->nullable();
             $table->timestamps();

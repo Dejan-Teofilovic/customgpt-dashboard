@@ -17,7 +17,12 @@ class SessionsFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'id' => '',
+            'user_id' => '',
+            'ip_address' => '',
+            'user_agent' => '',
+            'payload' => '',
+            'last_activity' => ''
         ];
     }
 }
