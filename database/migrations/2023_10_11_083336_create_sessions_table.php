@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id', 255)->primary()->nullable(false);
-            $table->bigInteger('user_id')->unsigned()->nullable();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload')->nullable(false);
-            $table->integer('last_activity')->nullable();
-        });
+        // Schema::create('sessions', function (Blueprint $table) {
+        //     $table->string('id', 255)->primary()->nullable(false);
+        //     $table->bigInteger('user_id')->unsigned()->nullable();
+        //     $table->string('ip_address', 45)->nullable();
+        //     $table->text('user_agent')->nullable();
+        //     $table->longText('payload')->nullable(false);
+        //     $table->integer('last_activity')->nullable();
+        // });
     }
 
     /**

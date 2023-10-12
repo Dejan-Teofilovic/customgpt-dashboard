@@ -17,8 +17,6 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->softDeletes();
-            $table->unsignedBigInteger('conversation_id')->nullable(false);
-            $table->unsignedBigInteger('prompt_history_id')->nullable();
             $table->string('request_source', 255)->nullable();
             $table->string('user_agent', 512)->nullable();
             $table->string('user_ip', 45)->nullable();
@@ -27,6 +25,8 @@ return new class extends Migration
             $table->json('user_agent_parsed')->nullable();
             $table->integer('response_time')->nullable();
             $table->string('external_id', 255)->nullable();
+            $table->unsignedBigInteger('conversation_id')->nullable(false);
+            $table->unsignedBigInteger('prompt_history_id')->nullable();
             $table->foreign('conversation_id')->references('id')->on('conversations');
             $table->foreign('prompt_history_id')->references('id')->on('prompt_histories');
         });

@@ -5,9 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Sessions;
+use Illuminate\Support\Facades\DB;
 
 class SessionsSeeder extends Seeder
 {
+
     /**
      * Run the database seeds.
      *
@@ -15,7 +17,6 @@ class SessionsSeeder extends Seeder
      */
     public function run()
     {
-        //
-        Sessions::factory()->count(100)->create();
+
     }
 }

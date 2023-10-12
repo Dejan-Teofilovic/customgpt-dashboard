@@ -22,8 +22,8 @@ return new class extends Migration
             $table->longText('openai_response')->nullable();
             $table->timestamps();
             $table->string('user_query_hash', 100)->nullable();
-            $table->unsignedBigInteger('conversation_id')->nullable();
             $table->json('citations')->nullable();
+            $table->unsignedBigInteger('conversation_id')->nullable();
             $table->foreign('conversation_id')->references('id')->on('conversations');
         });
     }

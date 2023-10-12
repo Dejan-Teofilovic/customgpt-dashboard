@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/analytics/queries', [AnalyticsController::class, 'queries']);
+Route::get('/analytics/conversations', [AnalyticsController::class, 'conversations']);
+Route::get('/analytics/daily-breakdown', [AnalyticsController::class, 'dailybreakdown']);
+Route::get('/analytics/user-location', [AnalyticsController::class, 'userlocation']);
+Route::get('/analytics/total-queries', [AnalyticsController::class, 'totalqueries']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+

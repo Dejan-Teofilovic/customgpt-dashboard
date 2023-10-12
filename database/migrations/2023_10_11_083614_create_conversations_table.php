@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('project_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->string('session_id', 255)->nullable(false);
-            $table->foreign('session_id')->references('id')->on('sessions');
+            // $table->foreign('session_id')->references('id')->on('sessions');
         });
     }
 
