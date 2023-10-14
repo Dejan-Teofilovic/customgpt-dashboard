@@ -20,6 +20,7 @@ Route::get('/analytics/conversations', [AnalyticsController::class, 'conversatio
 Route::get('/analytics/daily-breakdown', [AnalyticsController::class, 'dailybreakdown']);
 Route::get('/analytics/user-location', [AnalyticsController::class, 'userlocation']);
 Route::get('/analytics/total-queries', [AnalyticsController::class, 'totalqueries']);
+Route::get('/analytics/metadata', [AnalyticsController::class, 'metadata']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

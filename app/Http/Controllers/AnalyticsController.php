@@ -379,8 +379,68 @@ public function calculateAverageTimeSpanForlast7days()
      * This function returns the statistics of the users, source, browser, query status.
      * For the user piechart cards in the dashboard. 
      */
+    public function metadata()
+    {
+        // This is the part of calculating the statistics of user_agent
+        $totalCount = prompts_metadata::distinct()->select('user_ip')->count();
+        $chromeCount = prompts_metadata::where('user_agent', 'like', '%chrome%')
+        ->distinct('user_ip')
+        ->count();
+        $windowsCount = prompts_metadata::where('user_agent', 'like', '%windows%')
+        ->distinct('user_ip')
+        ->count();
+        $safariCount = prompts_metadata::where('user_agent', 'like', '%safari%')
+        ->distinct('user_ip')
+        ->count();
+        $unknownCount = $totalCount - $chromeCount - $windowsCount - $safariCount;
+        $agentReport = ['chrome' => (100 * $chromeCount)/$totalCount, 'windows' => (100*$windowsCount)/$totalCount, 'safari' => (100*$safariCount)/$totalCount,
+                            'unknown' => (100*$unknownCount) / $totalCount];
+
+        // This is the part for calculating the query status
+        $totalQueryStatus = conversation_debug_info::count();
+        $successCount = conversation_debug_info::where('status', 'success')->count();
+        $failCount = $totalQueryStatus - $successCount;
+        $statusReport = ['success' => (100*$successCount) / $totalQueryStatus, 'fail' => (100*$failCount) / $totalQueryStatus];
+        return Response()->json(['browsers' => $agentReport, 'queryStatus' => $statusReport]);
+    }
+
+    function countRowsInTimeRanges() {
+        // Define the time ranges
+        $timeRanges = [
+            ['start' => 0, 'end' => 6],
+            ['start' => 6, 'end' => 9],
+            ['start' => 9, 'end' => 12],
+            ['start' => 12, 'end' => 15],
+            ['start' => 15, 'end' => 18],
+            ['start' => 18, 'end' => 23],
+            ['start' => 23, 'end' => 24], // Note that this range includes 23:00 to 00:00
+        ];
+    
+        // Get the current time
+        $currentTime = Carbon::now();
+    
+        // Create an array to store the counts for each time range
+        $countResults = [];
+    
+        // Loop through the time ranges and count the rows in each range
+        foreach ($timeRanges as $range) {
+            $startTime = $currentTime->copy()->subHours(24)->addHours($range['start']);
+            $endTime = $currentTime->copy()->addHours($range['end']);
+    
+            $count = prompt_histories::whereBetween('created_at', [$startTime, $endTime])->count();
+    
+            $countResults[$range['start'] . '~' . $range['end']] = $count;
+        }
+    
+        return $countResults;
+    }
+
+    
     public function totalqueries()
     {
-        
+        $dataInTimeRange = $this->countRowsInTimeRanges();
+
+        Response()->json(['dataInTimeRange' => $dataInTimeRange]);
     }
+
 }
