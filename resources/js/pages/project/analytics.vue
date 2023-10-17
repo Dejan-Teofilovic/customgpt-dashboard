@@ -3,18 +3,12 @@
   <QueriesCard />
   <ConversationsCard />
   <!-- 👉 Earning Reports -->
-  <div :style="{marginTop:'16px'}" />
+  <div :style="{ marginTop: '16px' }" />
   <VRow>
-    <VCol
-      cols="12"
-      md="7"
-    >
+    <VCol cols="12" md="7">
       <DailyBreakdownCard />
     </VCol>
-    <VCol
-      cols="12"
-      md="5"
-    >
+    <VCol cols="12" md="5">
       <UserLocationCard />
     </VCol>
   </VRow>
@@ -51,12 +45,16 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
+// Import your components
 import Barcharts from '@/views/project/analytics/Barcharts.vue'
 import ConversationsCard from '@/views/project/analytics/ConversationsCard.vue'
 import DailyBreakdownCard from '@/views/project/analytics/DailyBreakdownCard.vue'
 import Piecharts from '@/views/project/analytics/Piecharts.vue'
 import QueriesCard from '@/views/project/analytics/QueriesCard.vue'
 import UserLocationCard from '@/views/project/analytics/UserLocationCard.vue'
+import axiosIns from '../../plugins/axios'
 
 const chartJsCustomColors = {
   white: '#fff',
@@ -78,4 +76,32 @@ const chartJsCustomColors = {
   areaChartGreyLight: '#edf1f4',
   scatterChartWarning: '#ff9f43',
 }
+
+const message = ref('Hello, Vue Composition API!')
+const counter = ref(0)
+
+function incrementCounter() {
+  counter.value++
+}
+
+// Lifecycle hooks
+onMounted(() => {
+  console.log('Component mounted')
+  axiosIns.get('analytics/all')
+    .then(response => {
+      // Handle the API response data
+      debugger
+      console.log('API Response:', response.data)
+    })
+    .catch(error => {
+      debugger
+
+      // Handle any errors that occur during the request
+      console.error('API Error:', error)
+    });
+})
+
+onUnmounted(() => {
+  console.log('Component unmounted')
+})
 </script>

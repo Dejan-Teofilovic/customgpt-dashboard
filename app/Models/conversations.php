@@ -11,7 +11,7 @@ class conversations extends Model
 
     public function prompthistories()
     {
-        return $this->hasMany(prompt_histories::class, 'conversation_id', 'id');
+        return $this->hasMany(prompt_histories::class, 'conversation_id', 'id')->orderBy('created_at', 'asc');
     }
     // public function promptsmetadatas()
     // {
