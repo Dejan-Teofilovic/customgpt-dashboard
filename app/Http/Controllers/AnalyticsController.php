@@ -580,7 +580,7 @@ class AnalyticsController extends Controller
 
         if ($showAll) {
             $queryCount = prompt_histories::count();
-            return Response()->json(['queryCount' => $queryCount]);
+            return Response()->json(['result' => $queryCount]);
         }
         if ($startDateTime && $endDateTime) {
             $startDateTime = Carbon::parse($startDateTime);
@@ -599,7 +599,7 @@ class AnalyticsController extends Controller
 
         if ($showAll) {
             $avgResponseEnd = prompts_metadata::average('response_time');
-            return Response()->json(['result' => $avgResponseEnd]);
+            return Response()->json(['avgResponseEnd' => $avgResponseEnd]);
         }
         if ($startDateTime && $endDateTime) {
             $startDateTime = Carbon::parse($startDateTime);
@@ -618,7 +618,7 @@ class AnalyticsController extends Controller
 
         if ($showAll) {
             $avgResponseEnd = prompts_metadata::average('response_time');
-            return Response()->json(['result' => 1.2]);
+            return Response()->json(['avgResponseEnd' => 1.2]);
         }
         if ($startDateTime && $endDateTime) {
             $startDateTime = Carbon::parse($startDateTime);
@@ -814,22 +814,29 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-
+        $isValid = false;
+        if ($showAll) {
+            $endDateTime = Carbon::now();
+            $startDateTime = $endDateTime->copy()->subDays(7);
+            $isValid = true;
+        }
         if ($startDateTime && $endDateTime) {
             $startDateTime = Carbon::parse($startDateTime);
             $endDateTime = Carbon::parse($endDateTime);
-
-            // Perform the query to count rows for each day
-            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-                ->get();
-
-            // Convert the results to an associative array for JSON response
-            $report = $result->pluck('count', 'date')->all();
-
-            return $report;
+            $isValid = true;
         }
+        if (!$isValid)
+            return Request()->json(['result' => 'failed parameter verification']);
+        // Perform the query to count rows for each day
+        $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+            ->get();
+
+        // Convert the results to an associative array for JSON response
+        $report = $result->pluck('count', 'date')->all();
+
+        return $report;
     }
 
     public function getDailyBreakdownResponseStartTime(Request $request)
@@ -1056,7 +1063,7 @@ class AnalyticsController extends Controller
             ->count();
 
         return [
-            'United Status' => $USAcount, 'Turkey' => $turkeyCount, 'Argentina' => $turkeyCount, 'Japan' => $japanCount,
+            'United states' => $USAcount, 'Turkey' => $turkeyCount, 'Argentina' => $turkeyCount, 'Japan' => $japanCount,
             'Canada' => $canadaCount, 'Angola' => $angolaCount, 'China' => $chinaCount, 'Pakistan' => $pakistanCount, 'Portugal' => $portugalCount,
         ];
     }
@@ -1081,8 +1088,8 @@ class AnalyticsController extends Controller
             $countLivechat = prompts_metadata::where('request_source', 'like', '%livechat%')->count();
             $countTotal = $countApi + $countDashboard + $countEmbed + $countLivechat;
             $result = [
-                'Dashboard' => 100 * $countDashboard / $countTotal, 'Embed' => 100 * $countEmbed / $countTotal,
-                'Livechat' => 100 * $countLivechat / $countTotal, 'API' => 100 * $countApi / $countTotal
+                'Dashboard' => $countDashboard, 'Embed' => $countEmbed,
+                'Livechat' => $countLivechat, 'API' => $countApi
             ];
             arsort($result);
             return Response()->json($result);
@@ -1100,8 +1107,8 @@ class AnalyticsController extends Controller
                 ->where('request_source', 'like', '%livechat%')->count();
             $countTotal = $countApi + $countDashboard + $countEmbed + $countLivechat;
             $result = [
-                'Dashboard' => 100 * $countDashboard / $countTotal, 'Embed' => 100 * $countEmbed / $countTotal,
-                'Livechat' => 100 * $countLivechat / $countTotal, 'API' => 100 * $countApi / $countTotal
+                'Dashboard' => $countDashboard, 'Embed' => $countEmbed,
+                'Livechat' => $countLivechat, 'API' => $countApi
             ];
             arsort($result);
             return Response()->json($result);
@@ -1128,8 +1135,8 @@ class AnalyticsController extends Controller
                 ->count();
             $unknownCount = $totalCount - $chromeCount - $windowsCount - $safariCount;
             $agentReport = [
-                'chrome' => (100 * $chromeCount) / $totalCount, 'windows' => (100 * $windowsCount) / $totalCount, 'safari' => (100 * $safariCount) / $totalCount,
-                'unknown' => (100 * $unknownCount) / $totalCount
+                'chrome' => $chromeCount, 'windows' => $windowsCount, 'safari' => $safariCount,
+                'unknown' => $unknownCount
             ];
             arsort($agentReport);
             return $agentReport;
@@ -1152,8 +1159,8 @@ class AnalyticsController extends Controller
                 ->count();
             $unknownCount = $totalCount - $chromeCount - $windowsCount - $safariCount;
             $agentReport = [
-                'chrome' => (100 * $chromeCount) / $totalCount, 'windows' => (100 * $windowsCount) / $totalCount, 'safari' => (100 * $safariCount) / $totalCount,
-                'unknown' => (100 * $unknownCount) / $totalCount
+                'chrome' => $chromeCount, 'windows' => $windowsCount, 'safari' => $safariCount,
+                'unknown' => $unknownCount
             ];
             arsort($agentReport);
             return $agentReport;
@@ -1169,7 +1176,7 @@ class AnalyticsController extends Controller
             $totalQueryStatus = conversation_debug_info::count();
             $successCount = conversation_debug_info::where('status', 'success')->count();
             $failCount = $totalQueryStatus - $successCount;
-            $statusReport = ['success' => (100 * $successCount) / $totalQueryStatus, 'fail' => (100 * $failCount) / $totalQueryStatus];
+            $statusReport = ['success' => $successCount, 'fail' => $failCount];
             arsort($statusReport);
             return $statusReport;
         }
@@ -1182,7 +1189,7 @@ class AnalyticsController extends Controller
             // $failedCount = $total- $successCount;
             $failCount = $totalQueryStatus - $successCount;
 
-            $statusReport = ['success' => (100 * $successCount) / $totalQueryStatus, 'fail' => (100 * $failCount) / $totalQueryStatus];
+            $statusReport = ['success' => $successCount, 'fail' => $failCount];
             arsort($statusReport);
             return $statusReport;
         }
@@ -1234,7 +1241,7 @@ class AnalyticsController extends Controller
 
             $count = prompt_histories::whereBetween('created_at', [$startTime, $endTime])->count();
 
-            $countResults[$range['start'] . '~' . $range['end']] = $count;
+            $countResults[$range['start']] = $count;
         }
 
         return $countResults;

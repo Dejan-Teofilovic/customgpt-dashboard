@@ -30,6 +30,9 @@
       "@layouts": [
         "resources/js/@layouts"
       ],
+      "@stores": [
+        "resources/js/@stores"
+      ],
       "@core/*": [
         "resources/js/@core/*"
       ],

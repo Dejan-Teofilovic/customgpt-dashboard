@@ -17,6 +17,7 @@ const chartOptions = computed(() => getLatestBarChartConfig(vuetifyTheme.current
 
 const data = reactive({
   labels: [
+
   ],
   datasets: [{
     maxBarThickness: 15,
@@ -31,14 +32,14 @@ const data = reactive({
   }],
 })
 
-watch(() => globalStore.totalQueryHourly, (newTotalQuery) => {
+watch(() => globalStore.totalQueryDaily, (newTotalQuery) => {
   data.labels = Array.from(Object.keys(newTotalQuery));
   data.datasets[0].data = Array.from(Object.values(newTotalQuery));
-});
 
+});
 
 </script>
 
 <template>
-  <BarChart :height="400" :chart-data="data" key="testkey1" :chart-options="chartOptions" />
+  <BarChart :height="400" :chart-data="data" key="keytest2" :chart-options="chartOptions" />
 </template>

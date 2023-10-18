@@ -296,7 +296,7 @@ export const getRadialBarChartConfig = themeColors => {
     },
   }
 }
-export const getDonutChartConfig = themeColors => {
+export const getDonutChartConfig = (themeColors, labelsparam) => {
   const donutColors = {
     series1: '#fdd835',
     series2: '#00d4bd',
@@ -309,7 +309,7 @@ export const getDonutChartConfig = themeColors => {
   
   return {
     stroke: { width: 0 },
-    labels: ['Operational', 'Networking', 'Hiring', 'R&D'],
+    labels: [...labelsparam],
     colors: [donutColors.series1, donutColors.series5, donutColors.series3, donutColors.series2],
     dataLabels: {
       enabled: true,

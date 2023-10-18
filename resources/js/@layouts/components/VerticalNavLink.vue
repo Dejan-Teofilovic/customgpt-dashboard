@@ -20,45 +20,26 @@ const hideTitleAndBadge = isVerticalNavMini(windowWidth)
 </script>
 
 <template>
-  <li
-    v-if="can(item.action, item.subject)"
-    class="nav-link"
-    :class="{ disabled: item.disable }"
-  >
-    <Component
-      :is="item.to ? 'RouterLink' : 'a'"
-      v-bind="getComputedNavLinkToProp(item)"
-      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }"
-    >
-      <Component
-        :is="config.app.iconRenderer || 'div'"
-        v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
-        class="nav-item-icon"
-      />
+  <li v-if="can(item.action, item.subject)" class="nav-link" :class="{ disabled: item.disable }">
+    <Component :is="item.to ? 'RouterLink' : 'a'" v-bind="getComputedNavLinkToProp(item)"
+      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }">
+      <Component :is="config.app.iconRenderer || 'div'" v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
+        class="nav-item-icon" />
       <TransitionGroup name="transition-slide-x">
-        <!-- 👉 Title -->
-        <Component
-          :is="config.app.enableI18n ? 'i18n-t' : 'span'"
-          v-show="!hideTitleAndBadge"
-          key="title"
-          class="nav-item-title"
-          v-bind="dynamicI18nProps(item.title, 'span')"
-        >
-          {{ item.title }}
-        </Component>
+        <div key="transition_id2">
+          <!-- 👉 Title -->
+          <Component :is="config.app.enableI18n ? 'i18n-t' : 'span'" v-show="!hideTitleAndBadge" key="title"
+            class="nav-item-title" v-bind="dynamicI18nProps(item.title, 'span')">
+            {{ item.title }}
+          </Component>
 
-        <!-- 👉 Badge -->
-        <Component
-          :is="config.app.enableI18n ? 'i18n-t' : 'span'"
-          v-if="item.badgeContent"
-          v-show="!hideTitleAndBadge"
-          key="badge"
-          class="nav-item-badge"
-          :class="item.badgeClass"
-          v-bind="dynamicI18nProps(item.badgeContent, 'span')"
-        >
-          {{ item.badgeContent }}
-        </Component>
+          <!-- 👉 Badge -->
+          <Component :is="config.app.enableI18n ? 'i18n-t' : 'span'" v-if="item.badgeContent" v-show="!hideTitleAndBadge"
+            key="badge" class="nav-item-badge" :class="item.badgeClass"
+            v-bind="dynamicI18nProps(item.badgeContent, 'span')">
+            {{ item.badgeContent }}
+          </Component>
+        </div>
       </TransitionGroup>
     </Component>
   </li>
