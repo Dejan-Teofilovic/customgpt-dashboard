@@ -8,17 +8,39 @@
     </div>
     <VCardText class="pt-6">
       <VRow>
-        <VCol v-for="item in statistics" :key="item.title" cols="6" class="custom-col" md="3">
-          <div class="queries-card gap-blocks"
-            :style="{ border: '1px solid #9e9e9e', borderRadius: '10px', padding: '16px', height: '100%' }">
-            <VAvatar :color="item.color" variant="tonal" size="42" class="me-3">
-              <VIcon size="24" :icon="item.icon" />
+        <VCol
+          v-for="item in statistics"
+          :key="item.title"
+          cols="6"
+          class="custom-col"
+          md="3"
+        >
+          <div
+            class="queries-card gap-blocks"
+            :style="{ border: '1px solid #9e9e9e', borderRadius: '10px', padding: '16px', height: '100%' }"
+          >
+            <VAvatar
+              :color="item.color"
+              variant="tonal"
+              size="42"
+              class="me-3"
+            >
+              <VIcon
+                size="24"
+                :icon="item.icon"
+              />
             </VAvatar>
 
             <div class="d-flex flex-column">
-              <span class="text-h5 font-weight-medium gap-statistics" :style="{ marginTop: '16px' }">{{ item.stats
+              <span
+                class="text-h5 font-weight-medium gap-statistics"
+                :style="{ marginTop: '16px' }"
+              >{{ item.stats
               }}</span>
-              <span class="text-caption sub-information" :style="{ fontSize: '15px !important' }">
+              <span
+                class="text-caption sub-information"
+                :style="{ fontSize: '15px !important' }"
+              >
                 {{ item.title }}
               </span>
             </div>
@@ -31,12 +53,14 @@
 
 
 <script setup>
-import { ref } from 'vue';
-import useGlobalStore from '../../../stores/globalStore';
-const globalStore = useGlobalStore();
+import { ref } from 'vue'
+import useGlobalStore from '../../../stores/globalStore'
 
-const name = ref('Apples');
-const message = ref('I like apples');
+const globalStore = useGlobalStore()
+
+const name = ref('Apples')
+const message = ref('I like apples')
+
 const statistics = ref([
   {
     title: 'Queries',
@@ -68,59 +92,71 @@ const statistics = ref([
     icon: 'custom-users',
     color: 'error',
   },
-]);
+])
 
-watch(() => globalStore.totalQueryCount, (newTotalQuery) => {
+watch(() => globalStore.totalQueryCount, newTotalQuery => {
   const updatedStatistics = statistics.value.map(stat => {
     if (stat.title === 'Queries') {
-      stat.stats = newTotalQuery.result;
+      stat.stats = newTotalQuery.result
     }
-    return stat;
-  });
-  statistics.value = updatedStatistics;
-});
-watch(() => globalStore.avgResponseEndTime, (newTotalQuery) => {
+    
+    return stat
+  })
+
+  statistics.value = updatedStatistics
+})
+watch(() => globalStore.avgResponseEndTime, newTotalQuery => {
   const updatedStatistics = statistics.value.map(stat => {
     if (stat.title === 'Response End Time') {
-      const originalNumber = parseFloat(newTotalQuery.avgResponseEnd);
-      const formattedString = originalNumber.toFixed(1) + "s";
-      stat.stats = newTotalQuery.avgResponseEnd == null ? 0 : formattedString;
+      const originalNumber = parseFloat(newTotalQuery.avgResponseEnd)
+      const formattedString = originalNumber.toFixed(1) + "s"
+
+      stat.stats = newTotalQuery.avgResponseEnd == null ? 0 : formattedString
     }
-    return stat;
-  });
-  statistics.value = updatedStatistics;
-});
-watch(() => globalStore.avgResponseStartTime, (newTotalQuery) => {
+    
+    return stat
+  })
+
+  statistics.value = updatedStatistics
+})
+watch(() => globalStore.avgResponseStartTime, newTotalQuery => {
   const updatedStatistics = statistics.value.map(stat => {
     if (stat.title === 'Response Start Time') {
-      const originalNumber = parseFloat(newTotalQuery.avgResponseEnd);
-      const formattedString = originalNumber.toFixed(1) + "s";
-      stat.stats = newTotalQuery.avgResponseEnd == null ? 0 : formattedString;
+      const originalNumber = parseFloat(newTotalQuery.avgResponseEnd)
+      const formattedString = originalNumber.toFixed(1) + "s"
+
+      stat.stats = newTotalQuery.avgResponseEnd == null ? 0 : formattedString
     }
-    return stat;
-  });
-  statistics.value = updatedStatistics;
-});
-watch(() => globalStore.avgQueryInputWord, (newTotalQuery) => {
+    
+    return stat
+  })
+
+  statistics.value = updatedStatistics
+})
+watch(() => globalStore.avgQueryInputWord, newTotalQuery => {
   const updatedStatistics = statistics.value.map(stat => {
     if (stat.title === 'Inputs Words') {
-      stat.stats = Math.floor(newTotalQuery.result);
+      stat.stats = Math.floor(newTotalQuery.result)
     }
-    return stat;
-  });
-  statistics.value = updatedStatistics;
-});
+    
+    return stat
+  })
 
-watch(() => globalStore.avgQueryOutputWord, (newTotalQuery) => {
+  statistics.value = updatedStatistics
+})
+
+watch(() => globalStore.avgQueryOutputWord, newTotalQuery => {
   const updatedStatistics = statistics.value.map(stat => {
     if (stat.title === 'Output Words') {
 
-      stat.stats = Math.floor(newTotalQuery.result);
+      stat.stats = Math.floor(newTotalQuery.result)
     }
-    return stat;
-  });
-  statistics.value = updatedStatistics;
-});
+    
+    return stat
+  })
+
+  statistics.value = updatedStatistics
+})
 </script>
 
 <style scoped>

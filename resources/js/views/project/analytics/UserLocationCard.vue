@@ -8,9 +8,10 @@ import paFlag from '@images/icons/countries/pk.png'
 import poFlag from '@images/icons/countries/po.png'
 import tkFlag from '@images/icons/countries/tk.png'
 import usFlag from '@images/icons/countries/us.png'
-import useGlobalStore from '../../../stores/globalStore';
-import { ref, reactive } from 'vue';
-const globalStore = useGlobalStore();
+import useGlobalStore from '../../../stores/globalStore'
+import { ref, reactive } from 'vue'
+
+const globalStore = useGlobalStore()
 
 const salesByCountries = ref([
   {
@@ -69,30 +70,46 @@ const salesByCountries = ref([
   },
 ])
 
-watch(() => globalStore.userLocation, (newTotalQuery) => {
+watch(() => globalStore.userLocation, newTotalQuery => {
   const updatedStatistics = salesByCountries.value.map(stat => {
-    stat.profitLoss = newTotalQuery[stat.subtitle];
-    return stat;
-  });
+    stat.profitLoss = newTotalQuery[stat.subtitle]
+    
+    return stat
+  })
 
-  salesByCountries.value = Array.from(updatedStatistics);
-});
-
+  salesByCountries.value = Array.from(updatedStatistics)
+})
 </script>
 
 <template>
-  <VCard title="User Location" height="100%">
+  <VCard
+    title="User Location"
+    height="100%"
+  >
     <template #append>
       <div class="mt-n4 me-n2">
-        <VBtn icon color="default" size="x-small" variant="plain" />
+        <VBtn
+          icon
+          color="default"
+          size="x-small"
+          variant="plain"
+        />
       </div>
     </template>
 
     <VCardText>
       <VList class="card-list">
-        <VListItem v-for="country in salesByCountries" :key="country.stats">
+        <VListItem
+          v-for="country in salesByCountries"
+          :key="country.stats"
+        >
           <template #prepend>
-            <VAvatar size="34" color="secondary" variant="tonal" :image="country.avatarImg" />
+            <VAvatar
+              size="34"
+              color="secondary"
+              variant="tonal"
+              :image="country.avatarImg"
+            />
           </template>
 
           <VListItemTitle class="font-weight-medium">

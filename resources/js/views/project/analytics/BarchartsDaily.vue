@@ -1,23 +1,26 @@
 <script setup>
 import BarChart from '@/@core/libs/chartjs/components/BarChart'
-import { getLatestBarChartConfig } from '@core/libs/chartjs/chartjsConfig'
+import { getLatestBarChartConfigDaily } from '@core/libs/chartjs/chartjsConfig'
 import { useTheme } from 'vuetify'
-import useGlobalStore from '../../../stores/globalStore';
-import { ref, reactive } from "vue";
-const globalStore = useGlobalStore();
+import useGlobalStore from '../../../stores/globalStore'
+import { ref, reactive, computed } from "vue"
+
 const props = defineProps({
   colors: {
-    type: null,
+    type: Object,
     required: true,
   },
 })
 
+const globalStore = useGlobalStore()
 const vuetifyTheme = useTheme()
-const chartOptions = computed(() => getLatestBarChartConfig(vuetifyTheme.current.value))
+const chartOptions = computed(() => {
+  const result = getLatestBarChartConfigDaily(vuetifyTheme.current.value)
+  return { result, key: Date.now() }
+})
 
 const data = reactive({
   labels: [
-
   ],
   datasets: [{
     maxBarThickness: 15,
@@ -32,14 +35,13 @@ const data = reactive({
   }],
 })
 
-watch(() => globalStore.totalQueryDaily, (newTotalQuery) => {
-  data.labels = Array.from(Object.keys(newTotalQuery));
-  data.datasets[0].data = Array.from(Object.values(newTotalQuery));
-
-});
-
+watch(() => globalStore.totalQueryDaily, newTotalQuery => {
+  data.labels = Array.from(Object.keys(newTotalQuery))
+  data.datasets[0].data = Array.from(Object.values(newTotalQuery))
+})
 </script>
 
 <template>
-  <BarChart :height="400" :chart-data="data" key="keytest2" :chart-options="chartOptions" />
+  <BarChart key="keytest2" :height="400" :chart-data="data" :chart-options="chartOptions.result"
+    :key="chartOptions.key" />
 </template>

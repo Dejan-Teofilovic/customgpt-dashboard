@@ -2,7 +2,7 @@
   "name": "vuexy-vuetify-vuejs-admin-template",
   "version": "7.0.1",
   "scripts": {
-    "dev": "npm run build:icons && vite --host",
+    "dev": "npm run build:icons && vite --host --log-level verbose",
     "build": "npm run build:icons && vite build",
     "lint": "eslint . -c .eslintrc.js --fix --ext .ts,.js,.vue,.tsx,.jsx",
     "build:icons": "node resources/js/@iconify/build-icons.js"

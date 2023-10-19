@@ -98,39 +98,72 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
 </script>
 
 <template>
-  <li v-if="canViewNavMenuGroup(item)" class="nav-group" :class="[
-    {
-      active: isGroupActive,
-      open: isGroupOpen,
-      disabled: item.disable,
-    },
-  ]">
-    <div class="nav-group-label" @click="isGroupOpen = !isGroupOpen">
-      <Component :is="config.app.iconRenderer || 'div'" v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
-        class="nav-item-icon" />
+  <li
+    v-if="canViewNavMenuGroup(item)"
+    class="nav-group"
+    :class="[
+      {
+        active: isGroupActive,
+        open: isGroupOpen,
+        disabled: item.disable,
+      },
+    ]"
+  >
+    <div
+      class="nav-group-label"
+      @click="isGroupOpen = !isGroupOpen"
+    >
+      <Component
+        :is="config.app.iconRenderer || 'div'"
+        v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
+        class="nav-item-icon"
+      />
       <TransitionGroup name="transition-slide-x">
         <div key="transition_id1">
           <!-- 👉 Title -->
-          <Component :is=" config.app.enableI18n ? 'i18n-t' : 'span'" v-bind="dynamicI18nProps(item.title, 'span')"
-            v-show="!hideTitleAndBadge" key="title" class="nav-item-title">
+          <Component
+            :is=" config.app.enableI18n ? 'i18n-t' : 'span'"
+            v-bind="dynamicI18nProps(item.title, 'span')"
+            v-show="!hideTitleAndBadge"
+            key="title"
+            class="nav-item-title"
+          >
             {{ item.title }}
           </Component>
 
           <!-- 👉 Badge -->
-          <Component :is="config.app.enableI18n ? 'i18n-t' : 'span'" v-bind="dynamicI18nProps(item.badgeContent, 'span')"
-            v-show="!hideTitleAndBadge" v-if="item.badgeContent" key="badge" class="nav-item-badge"
-            :class="item.badgeClass">
+          <Component
+            :is="config.app.enableI18n ? 'i18n-t' : 'span'"
+            v-bind="dynamicI18nProps(item.badgeContent, 'span')"
+            v-show="!hideTitleAndBadge"
+            v-if="item.badgeContent"
+            key="badge"
+            class="nav-item-badge"
+            :class="item.badgeClass"
+          >
             {{ item.badgeContent }}
           </Component>
-          <Component :is="config.app.iconRenderer || 'div'" v-show="!hideTitleAndBadge" v-bind="config.icons.chevronRight"
-            key="arrow" class="nav-group-arrow" />
+          <Component
+            :is="config.app.iconRenderer || 'div'"
+            v-show="!hideTitleAndBadge"
+            v-bind="config.icons.chevronRight"
+            key="arrow"
+            class="nav-group-arrow"
+          />
         </div>
       </TransitionGroup>
     </div>
     <TransitionExpand>
-      <ul v-show="isGroupOpen" class="nav-group-children">
-        <Component :is="'children' in child ? 'VerticalNavGroup' : VerticalNavLink" v-for="child in item.children"
-          :key="child.title" :item="child" />
+      <ul
+        v-show="isGroupOpen"
+        class="nav-group-children"
+      >
+        <Component
+          :is="'children' in child ? 'VerticalNavGroup' : VerticalNavLink"
+          v-for="child in item.children"
+          :key="child.title"
+          :item="child"
+        />
       </ul>
     </TransitionExpand>
   </li>

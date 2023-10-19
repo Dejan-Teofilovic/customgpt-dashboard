@@ -2,61 +2,62 @@
 import { hexToRgb } from '@layouts/utils'
 import VueApexCharts from 'vue3-apexcharts'
 import { useTheme } from 'vuetify'
-import useGlobalStore from '../../../stores/globalStore';
-import { ref, reactive } from 'vue';
+import useGlobalStore from '../../../stores/globalStore'
+import { ref } from 'vue'
 
-const globalStore = useGlobalStore();
+const globalStore = useGlobalStore()
 const vuetifyTheme = useTheme()
+
+// Define the states
 const currentTab = ref(0)
 const refVueApexChart = ref()
-const chartLabel = ref([[], [], [], [], [], [], [], []]);
+const chartLabel = ref([[], [], [], [], [], [], [], []])
 const chartData = ref([[], [], [], [], [], [], [], []])
-const highlightedIndex = ref(0);
-// const chartLabel = ref(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
-// const chartData = ref([102, 145, 200, 432, 243, 345, 233])
+const highlightedIndex = ref(0)
+
 const selectTab = index => {
   if (currentTab.value == index)
-    return;
-  globalStore.setcurrentSelectedDailyBreakdown(index);
+    return
+
+  globalStore.setcurrentSelectedDailyBreakdown(index)
+
   const urls = [{ endpoint: 'daily-breakdown-query', property: 'dailyBreakdownQuery' },
-  { endpoint: 'daily-breakdown-response-start-time', property: 'dailyBreakdownResponseStartTime' },
-  { endpoint: 'daily-breakdown-response-end-time', property: 'dailyBreakdownResponseEndTime' },
-  { endpoint: 'daily-breakdown-input-word', property: 'dailyBreakdownInputWord' },
-  { endpoint: 'daily-breakdown-output-word', property: 'dailyBreakdownOutputWord' },
-  { endpoint: 'daily-breakdown-conversations', property: 'dailyBreakdownConversations' },
-  { endpoint: 'daily-breakdown-query-per-conversation', property: 'dailyBreakdownQueryPerConversation' },
-  { endpoint: 'daily-breakdown-conversation-time', property: 'dailyBreakdownConversationTime' },]
-  globalStore.fetchDataFromApi(urls[index].endpoint, urls[index].property);
+    { endpoint: 'daily-breakdown-response-start-time', property: 'dailyBreakdownResponseStartTime' },
+    { endpoint: 'daily-breakdown-response-end-time', property: 'dailyBreakdownResponseEndTime' },
+    { endpoint: 'daily-breakdown-input-word', property: 'dailyBreakdownInputWord' },
+    { endpoint: 'daily-breakdown-output-word', property: 'dailyBreakdownOutputWord' },
+    { endpoint: 'daily-breakdown-conversations', property: 'dailyBreakdownConversations' },
+    { endpoint: 'daily-breakdown-query-per-conversation', property: 'dailyBreakdownQueryPerConversation' },
+    { endpoint: 'daily-breakdown-conversation-time', property: 'dailyBreakdownConversationTime' }]
+
+  globalStore.fetchDataFromApi(urls[index].endpoint, urls[index].property)
   currentTab.value = index
 }
 
-const addTab = () => {
-  // Logic to add a new tab
-}
 
 function formatFloatVariable(variable) {
   // Check if the variable is a number or a string that represents a float
   if (typeof variable === 'number' || (typeof variable === 'string' && !isNaN(parseFloat(variable)))) {
-    const floatValue = parseFloat(variable);
+    const floatValue = parseFloat(variable)
     if (!Number.isInteger(floatValue)) {
-      return floatValue.toFixed(1); // Format with 1 decimal place
+      return floatValue.toFixed(1) // Format with 1 decimal place
     }
   }
 
   // If the variable is not a float, return it as is
-  return variable;
+  return variable
 }
 
 const buttonData = ref([
-  { title: 'Queries', icon: 'tabler-question-mark', },
-  { title: 'Response Start Time', icon: 'tabler-clock', },
+  { title: 'Queries', icon: 'tabler-question-mark' },
+  { title: 'Response Start Time', icon: 'tabler-clock' },
   { title: 'Response End Time', icon: 'tabler-clock' },
-  { title: 'Input Words', icon: 'tabler-letter-a', },
-  { title: 'Output Words', icon: 'tabler-letter-a', },
-  { title: 'Conversations', icon: 'tabler-message', },
-  { title: 'Queries Per Conversation', icon: 'tabler-question-mark', },
-  { title: 'Conversation Time', icon: 'tabler-chart-pie-2', },
-]);
+  { title: 'Input Words', icon: 'tabler-letter-a' },
+  { title: 'Output Words', icon: 'tabler-letter-a' },
+  { title: 'Conversations', icon: 'tabler-message' },
+  { title: 'Queries Per Conversation', icon: 'tabler-question-mark' },
+  { title: 'Conversation Time', icon: 'tabler-chart-pie-2' },
+])
 
 const chartConfigs = computed(() => {
   const currentTheme = vuetifyTheme.current.value.colors
@@ -65,7 +66,6 @@ const chartConfigs = computed(() => {
   const legendColor = `rgba(${hexToRgb(currentTheme['on-background'])},${variableTheme['high-emphasis-opacity']})`
   const borderColor = `rgba(${hexToRgb(String(variableTheme['border-color']))},${variableTheme['border-opacity']})`
   const labelColor = `rgba(${hexToRgb(currentTheme['on-surface'])},${variableTheme['disabled-opacity']})`
-
 
   return {
     title: buttonData.value[currentTab.value].title,
@@ -96,9 +96,10 @@ const chartConfigs = computed(() => {
       },
       colors: chartLabel.value[currentTab.value].map((value, index, arr) => {
         if (index == highlightedIndex.value) {
-          return currentTheme.primary;
+          return currentTheme.primary
         }
-        return labelPrimaryColor;
+        
+        return labelPrimaryColor
       }),
       dataLabels: {
         enabled: true,
@@ -117,8 +118,7 @@ const chartConfigs = computed(() => {
       tooltip: { enabled: false },
       xaxis: {
         categories: [
-          // chartLabel.length != 0 ? ...this.chartLabel : ...['Mon', 'Tue', 'Mon', 'Tue', 'Mon', 'Tue']
-          ...chartLabel.value[currentTab.value]
+          ...chartLabel.value[currentTab.value],
         ],
         axisBorder: {
           show: true,
@@ -177,16 +177,15 @@ const chartConfigs = computed(() => {
     },
     series: [{
       data: [
-        ...chartData.value[currentTab.value]
+        ...chartData.value[currentTab.value],
       ],
     }],
   }
 
-});
+})
 
 const variablesToWatch = [
   'globalStore.dailyBreakdownResponseStartTime',
-  //{ endpoint: 'userlocation', property: 'userLocation' },
   "globalStore.dailyBreakdownQuery",
   "globalStore.dailyBreakdownResponseStartTime",
   "globalStore.dailyBreakdownResponseEndTime",
@@ -194,174 +193,111 @@ const variablesToWatch = [
   "globalStore.dailyBreakdownOutputWord",
   "globalStore.dailyBreakdownConversations",
   "globalStore.dailyBreakdownQueryPerConversation",
-  "globalStore.dailyBreakdownConversationTime"
-];
+  "globalStore.dailyBreakdownConversationTime",
+]
 
 // Create a watch statement for each variable
-variablesToWatch.forEach((variableName) => {
-  watch(() => eval(variableName), (newTotalQuery) => {
-    //chartConfigs[0].series[0].data[...]
-    //chartConfigs[0].charOptions.xaxis.categories[...]
-    let stat = chartConfigs.value;
-    const convertedObject = {};
-    let biggest = 0;
-    let beggestIndex = 0;
-    let indexTest = 0;
+variablesToWatch.forEach(variableName => {
+  watch(() => eval(variableName), newTotalQuery => {
+    let stat = chartConfigs.value
+    const convertedObject = {}
+    let biggest = 0
+    let beggestIndex = 0
+    let indexTest = 0
     for (const key in newTotalQuery) {
       if (newTotalQuery.hasOwnProperty(key)) {
         // Split the date string into its components
-        const dateComponents = key.split('-');
+        const dateComponents = key.split('-')
 
         // Extract the month and day
-        const month = parseInt(dateComponents[1], 10);
-        const day = parseInt(dateComponents[2], 10);
-        const convertedKey = `${month}/${day}`;
-        convertedObject[convertedKey] = formatFloatVariable(newTotalQuery[key]);
+        const month = parseInt(dateComponents[1], 10)
+        const day = parseInt(dateComponents[2], 10)
+        const convertedKey = `${month}/${day}`
+
+        convertedObject[convertedKey] = formatFloatVariable(newTotalQuery[key])
         if (newTotalQuery[key] > biggest) {
           biggest = newTotalQuery[key]
-          beggestIndex = indexTest;
+          beggestIndex = indexTest
         }
       }
-      indexTest++;
+      indexTest++
     }
 
-    stat.series[0].data.length = 0;
-    stat.chartOptions.xaxis.categories.length = 0;
-    stat.chartOptions.colors[beggestIndex] = vuetifyTheme.current.value.colors.primary;
-    // stat.series[0].data = Object.assign({}, Object.keys(convertedObject));
-    // stat.chartOptions.xaxis.categories = Object.assign({}, Object.values(convertedObject));
-    chartLabel.value[currentTab.value].length = 0;
-    chartData.value[currentTab.value].length = 0;
-    chartLabel.value[currentTab.value] = Array.from(Object.keys(convertedObject));
-    chartData.value[currentTab.value] = Array.from(Object.values(convertedObject));
+    stat.series[0].data.length = 0
+    stat.chartOptions.xaxis.categories.length = 0
+    stat.chartOptions.colors[beggestIndex] = vuetifyTheme.current.value.colors.primary
+    chartLabel.value[currentTab.value].length = 0
+    chartData.value[currentTab.value].length = 0
+    chartLabel.value[currentTab.value] = Array.from(Object.keys(convertedObject))
+    chartData.value[currentTab.value] = Array.from(Object.values(convertedObject))
     console.log(beggestIndex)
-    highlightedIndex.value = beggestIndex;
-    //stat.chartOptions.xaxis.categories = [...keys];
-    //stat.series[0].data = [...values];
-
-
-  });
-});
-
-// watch(() => globalStore.dailyBreakdownQuery, (newTotalQuery) => {
-//   //chartConfigs[0].series[0].data[...]
-//   //chartConfigs[0].charOptions.xaxis.categories[...]
-//   let stat = chartConfigs.value;
-//   const convertedObject = {};
-//   let biggest = 0;
-//   let beggestIndex = 0;
-//   let indexTest = 0;
-//   for (const key in newTotalQuery) {
-//     if (newTotalQuery.hasOwnProperty(key)) {
-//       // Split the date string into its components
-//       const dateComponents = key.split('-');
-
-//       // Extract the month and day
-//       const month = parseInt(dateComponents[1], 10);
-//       const day = parseInt(dateComponents[2], 10);
-//       const convertedKey = `${month}/${day}`;
-//       convertedObject[convertedKey] = newTotalQuery[key];
-//       if (newTotalQuery[key] > biggest) {
-//         biggest = newTotalQuery[key]
-//         beggestIndex = indexTest;
-//       }
-//     }
-//     indexTest++;
-//   }
-
-//   stat.series[0].data.length = 0;
-//   stat.chartOptions.xaxis.categories.length = 0;
-//   stat.chartOptions.colors[beggestIndex] = vuetifyTheme.current.value.colors.primary;
-//   // stat.series[0].data = Object.assign({}, Object.keys(convertedObject));
-//   // stat.chartOptions.xaxis.categories = Object.assign({}, Object.values(convertedObject));
-//   chartLabel.value[currentTab.value].length = 0;
-//   chartData.value[currentTab.value].length = 0;
-//   chartLabel.value[currentTab.value] = Array.from(Object.keys(convertedObject));
-//   chartData.value[currentTab.value] = Array.from(Object.values(convertedObject));
-//   console.log(beggestIndex)
-//   highlightedIndex.value = beggestIndex;
-//   //stat.chartOptions.xaxis.categories = [...keys];
-//   //stat.series[0].data = [...values];
-
-
-// });
-
-// watch(() => globalStore.dailyBreakdownResponseStartTime, (newTotalQuery) => {
-//   //chartConfigs[0].series[0].data[...]
-//   //chartConfigs[0].charOptions.xaxis.categories[...]
-//   let stat = chartConfigs.value;
-
-//   const convertedObject = {};
-//   let biggest = 0;
-//   let beggestIndex = 0;
-//   let indexTest = 0;
-//   for (const key in newTotalQuery) {
-//     if (newTotalQuery.hasOwnProperty(key)) {
-//       // Split the date string into its components
-//       const dateComponents = key.split('-');
-
-//       // Extract the month and day
-//       const month = parseInt(dateComponents[1], 10);
-//       const day = parseInt(dateComponents[2], 10);
-//       const convertedKey = `${month}/${day}`;
-//       convertedObject[convertedKey] = parseFloat(newTotalQuery[key]).toFixed(1).toString()
-//       if (newTotalQuery[key] > biggest) {
-//         biggest = newTotalQuery[key]
-//         beggestIndex = indexTest;
-//       }
-//     }
-//     indexTest++;
-//   }
-
-//   stat.series[0].data.length = 0;
-//   stat.chartOptions.xaxis.categories.length = 0;
-//   stat.chartOptions.colors[beggestIndex] = vuetifyTheme.current.value.colors.primary;
-//   // stat.series[0].data = Object.assign({}, Object.keys(convertedObject));
-//   // stat.chartOptions.xaxis.categories = Object.assign({}, Object.values(convertedObject));
-//   highlightedIndex.value = beggestIndex;
-//   chartLabel.value[currentTab.value].length = 0;
-//   chartData.value[currentTab.value].length = 0;
-//   chartLabel.value[currentTab.value] = Array.from(Object.keys(convertedObject));
-//   chartData.value[currentTab.value] = Array.from(Object.values(convertedObject));
-//   console.log(beggestIndex)
-//   //stat.chartOptions.xaxis.categories = [...keys];
-//   //stat.series[0].data = [...values];
-
-// });
-
+    highlightedIndex.value = beggestIndex
+  })
+})
 </script>
 
 <template>
-  <VCard title="Daily Breakdown" subtitle="Last 7 days">
+  <VCard
+    title="Daily Breakdown"
+    subtitle="Last 7 days"
+  >
     <template #append>
       <div class="mt-n4 me-n2">
-        <VBtn icon size="x-small" variant="plain" color="default" />
+        <VBtn
+          icon
+          size="x-small"
+          variant="plain"
+          color="default"
+        />
       </div>
     </template>
 
     <VCardText>
       <div :style="{ display: 'flex', flexWrap: 'wrap' }">
-        <div v-for="(report, index) in buttonData" :key="report.title" class="tab" :class="{
-          'selected': currentTab === index,
-          'dashed-border': currentTab !== index
-        }" @click="selectTab(index)">
-          <div class="daily-breakdown-button" :class="{
+        <div
+          v-for="(report, index) in buttonData"
+          :key="report.title"
+          class="tab"
+          :class="{
             'selected': currentTab === index,
             'dashed-border': currentTab !== index
-          }">
-            <VAvatar rounded size="38" :color="currentTab === index ? 'primary' : 'secondary'" variant="tonal"
-              class="mb-1">
+          }"
+          @click="selectTab(index)"
+        >
+          <div
+            class="daily-breakdown-button"
+            :class="{
+              'selected': currentTab === index,
+              'dashed-border': currentTab !== index
+            }"
+          >
+            <VAvatar
+              rounded
+              size="38"
+              :color="currentTab === index ? 'primary' : 'secondary'"
+              variant="tonal"
+              class="mb-1"
+            >
               <VIcon :icon="report.icon" />
             </VAvatar>
-            <p class="mb-0" :style="{ textAlign: 'center' }">
+            <p
+              class="mb-0"
+              :style="{ textAlign: 'center' }"
+            >
               {{ report.title }}
             </p>
           </div>
         </div>
       </div>
 
-      <VueApexCharts ref="refVueApexChart" :key="chartConfigs.title" :options="chartConfigs.chartOptions"
-        :series="chartConfigs.series" height="240" class="mt-3" />
+      <VueApexCharts
+        ref="refVueApexChart"
+        :key="chartConfigs.title"
+        :options="chartConfigs.chartOptions"
+        :series="chartConfigs.series"
+        height="240"
+        class="mt-3"
+      />
     </VCardText>
   </VCard>
 </template>

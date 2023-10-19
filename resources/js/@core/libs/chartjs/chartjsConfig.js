@@ -48,6 +48,41 @@ export const getLatestBarChartConfig = themeColors => {
     },
   }
 }
+export const getLatestBarChartConfigDaily = themeColors => {
+  const { borderColor, labelColor } = colorVariables(themeColors)
+  
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 500 },
+    scales: {
+      x: {
+        grid: {
+          borderColor,
+          drawBorder: false,
+          color: borderColor,
+        },
+        ticks: { color: labelColor },
+      },
+      y: {
+        min: 0,
+        max: 400,
+        grid: {
+          borderColor,
+          drawBorder: false,
+          color: borderColor,
+        },
+        ticks: {
+          stepSize: 100,
+          color: labelColor,
+        },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+    },
+  }
+}
 
 // 👉 Horizontal Bar Chart Config
 export const getHorizontalBarChartConfig = themeColors => {
