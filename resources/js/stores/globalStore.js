@@ -7,6 +7,8 @@ import { defineStore } from 'pinia'
 import axios from '../plugins/axios'
 
 const apiEndpoints = [
+  { endpoint: 'total-query-hourly', property: 'totalQueryHourly' },
+  { endpoint: 'total-query-daily', property: 'totalQueryDaily' },
   { endpoint: 'total-query-count', property: 'totalQueryCount' },
   { endpoint: 'avg-response-end-time', property: 'avgResponseEndTime' },
   { endpoint: 'avg-response-start-time', property: 'avgResponseStartTime' },
@@ -16,8 +18,6 @@ const apiEndpoints = [
   { endpoint: 'total-conversation-count', property: 'totalConversationCount' },
   { endpoint: 'avg-query-per-conversation', property: 'avgQueryPerConversation' },
   { endpoint: 'avg-time-per-conversation', property: 'avgTimePerConversation' },
-  { endpoint: 'total-query-hourly', property: 'totalQueryHourly' },
-  { endpoint: 'total-query-daily', property: 'totalQueryDaily' },
 
   { endpoint: 'userlocation', property: 'userLocation' },
   { endpoint: 'barchart-users', property: 'barchartUsers' },

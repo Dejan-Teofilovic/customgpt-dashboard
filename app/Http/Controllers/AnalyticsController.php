@@ -574,239 +574,235 @@ class AnalyticsController extends Controller
 
     // // Query section.
     // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // public function getTotalQueryCount(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
 
-    //     if ($showAll) {
-    //         $queryCount = prompt_histories::count();
-    //         return Response()->json(['result' => $queryCount]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         $queryCount = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-    //         return Response()->json(['result' => $queryCount]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
+    public function getTotalQueryCount(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    // public function getAvgResponseEndTime(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
+        if ($showAll) {
+            $queryCount = prompt_histories::count();
+        } elseif ($startDateTime && $endDateTime) {
+            $queryCount = prompt_histories::where(function ($query) use ($startDateTime, $endDateTime) {
+                $query->where('created_at', '>=', Carbon::parse($startDateTime))
+                    ->where('created_at', '<=', Carbon::parse($endDateTime));
+            })->count();
+        } else {
+            return response()->json(['result' => "Parameter verification failed"], 400);
+        }
 
-    //     if ($showAll) {
-    //         $avgResponseEnd = prompts_metadata::average('response_time');
-    //         return Response()->json(['avgResponseEnd' => $avgResponseEnd]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->avg('response_time');
-    //         return Response()->json(['avgResponseEnd' => $avgResponseEnd]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
+        return response()->json(['result' => $queryCount]);
+    }
 
-    // public function getAvgResponseStartTime(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
+    public function getAvgResponseEndTime(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    //     if ($showAll) {
-    //         $avgResponseEnd = prompts_metadata::average('response_time');
-    //         return Response()->json(['avgResponseEnd' => 1.2]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->avg('response_time');
-    //         return Response()->json(['avgResponseEnd' => 1.3]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
+        if ($showAll) {
+            $avgResponseEnd = prompts_metadata::average('response_time');
+        } elseif ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
+            $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->average('response_time');
+        } else {
+            return Response()->json(['result' => "Parameter verification failed"]);
+        }
 
-    // public function getAvgInputWords(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
+        return Response()->json(['avgResponseEnd' => $avgResponseEnd]);
+    }
 
-    //     if ($showAll) {
-    //         // Use the query builder to select the specified column
-    //         $content = prompt_histories::pluck('user_query');
+    public function getAvgResponseStartTime(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    //         // Initialize variables to store total word count and the number of records
-    //         $totalWordCount = 0;
-    //         $recordCount = $content->count();
+        if ($showAll) {
+            $avgResponseEnd = prompts_metadata::average('response_time');
+            return Response()->json(['avgResponseEnd' => 1.2]);
+        }
+        if ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
+            $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->avg('response_time');
+            return Response()->json(['avgResponseEnd' => 1.3]);
+        }
+        return Response()->json(['result' => "Parameter verification failed"]);
+    }
 
-    //         // Loop through the values and calculate word count
-    //         foreach ($content as $text) {
-    //             $wordCount = str_word_count($text);
-    //             $totalWordCount += $wordCount;
-    //         }
+    public function getAvgInputWords(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    //         // Calculate the average word count and cast it to an integer
-    //         $averageWordCount = $recordCount > 0 ? intval($totalWordCount / $recordCount) : 0;
-    //         return Response()->json(['result' => $averageWordCount]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         // Perform the query to calculate average word count for 'user_query' for each day
-    //         $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-    //             ->groupBy(DB::raw('DATE(created_at)'))
-    //             ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count'))
-    //             ->get();
+        if ($showAll) {
+            // Use the query builder to select the specified column and calculate the average word count
+            $averageWordCount = prompt_histories::select(
+                DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count')
+            )->first()->average_word_count;
 
-    //         $content = $result->pluck('average_word_count', 'date');
-    //         $recordCount = $content->count();
-    //         $wordCount = 0;
-    //         // Loop through the values and calculate word count
-    //         foreach ($content as $text) {
-    //             $wordCount += (float)$text;
-    //         }
+            // Handle cases where there are no records
+            $averageWordCount = $averageWordCount ?: 0;
+            return Response()->json(['result' => intval($averageWordCount)]);
+        }
 
-    //         // Calculate the average word count and cast it to an integer
-    //         $averageWordCount = $recordCount > 0 ? ($wordCount / $recordCount) : 0;
-    //         return Response()->json(['result' => $averageWordCount]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
-    // public function getAvgOutputWords(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
+        if ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
 
-    //     if ($showAll) {
-    //         // Use the query builder to select the specified column
-    //         $content = prompt_histories::pluck('openai_response');
+            // Perform the query to calculate average word count for 'user_query' for each day
+            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count'))
+                ->get();
 
-    //         // Initialize variables to store total word count and the number of records
-    //         $totalWordCount = 0;
-    //         $recordCount = $content->count();
+            // Calculate the overall average word count
+            $totalWordCount = 0;
+            $recordCount = $result->count();
+            foreach ($result as $row) {
+                $totalWordCount += $row->average_word_count;
+            }
+            $averageWordCount = $recordCount > 0 ? ($totalWordCount / $recordCount) : 0;
+            return Response()->json(['result' => $averageWordCount]);
+        }
 
-    //         // Loop through the values and calculate word count
-    //         foreach ($content as $text) {
-    //             $wordCount = str_word_count($text);
-    //             $totalWordCount += $wordCount;
-    //         }
+        return Response()->json(['result' => "Parameter verification failed"]);
+    }
 
-    //         // Calculate the average word count and cast it to an integer
-    //         $averageWordCount = $recordCount > 0 ? intval($totalWordCount / $recordCount) : 0;
-    //         return Response()->json(['result' => $averageWordCount]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         // Perform the query to calculate average word count for 'user_query' for each day
-    //         $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-    //             ->groupBy(DB::raw('DATE(created_at)'))
-    //             ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count'))
-    //             ->get();
+    public function getAvgOutputWords(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    //         $content = $result->pluck('average_word_count', 'date');
-    //         $recordCount = $content->count();
-    //         $wordCount = 0;
-    //         // Loop through the values and calculate word count
-    //         foreach ($content as $text) {
-    //             $wordCount += (float)$text;
-    //         }
+        if ($showAll) {
+            // Use the query builder to select the specified column and calculate the average word count
+            $averageWordCount = prompt_histories::select(
+                DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count')
+            )->first()->average_word_count;
 
-    //         // Calculate the average word count and cast it to an integer
-    //         $averageWordCount = $recordCount > 0 ? ($wordCount / $recordCount) : 0;
-    //         return Response()->json(['result' => $averageWordCount]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
+            // Handle cases where there are no records
+            $averageWordCount = $averageWordCount ?: 0;
+            return Response()->json(['result' => intval($averageWordCount)]);
+        }
 
-    // public function getTotalConversationCount(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
+        if ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
 
-    //     if ($showAll) {
-    //         $conversationCount = conversations::count();
-    //         return Response()->json(['result' => $conversationCount]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-    //         return Response()->json(['result' => $conversationCount]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
+            // Perform the query to calculate average word count for 'openai_response' for each day
+            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+                ->groupBy(DB::raw('DATE(created_at)'))
+                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count'))
+                ->get();
 
-    // public function getAvgQueryPerConversation(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
+            // Calculate the overall average word count
+            $totalWordCount = 0;
+            $recordCount = $result->count();
+            foreach ($result as $row) {
+                $totalWordCount += $row->average_word_count;
+            }
+            $averageWordCount = $recordCount > 0 ? ($totalWordCount / $recordCount) : 0;
+            return Response()->json(['result' => $averageWordCount]);
+        }
 
-    //     if ($showAll) {
-    //         $conversationCount = conversations::count();
-    //         $queryCount = prompt_histories::count();
-    //         return Response()->json(['result' => $queryCount / $conversationCount]);
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-    //         $queryCount = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-    //         return Response()->json(['result' => $queryCount / $conversationCount]);
-    //     }
-    //     return Response()->json(['result' => "Parameter verification failed"]);
-    // }
+        return Response()->json(['result' => "Parameter verification failed"]);
+    }
 
-    // public function getAvgTimePerConversation(Request $request)
-    // {
-    //     $startDateTime = $request->input('start');
-    //     $endDateTime = $request->input('end');
-    //     $showAll = $request->input('showall');
-    //     $conversationIds = null;
-    //     $isValid = false;
-    //     if ($showAll) {
-    //         $conversationIds = prompt_histories::select('conversation_id')
-    //             ->distinct()
-    //             ->pluck('conversation_id');
-    //         $isValid = true;
-    //     }
-    //     if ($startDateTime && $endDateTime) {
-    //         $startDateTime = Carbon::parse($startDateTime);
-    //         $endDateTime = Carbon::parse($endDateTime);
-    //         $conversationIds = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-    //             ->distinct()
-    //             ->pluck('conversation_id');
-    //         $isValid = true;
-    //     }
 
-    //     if (!$isValid)
-    //         return Response()->json(['result' => "Parameter verification failed"]);
+    public function getTotalConversationCount(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    //     $totalSpan = 0;
+        if ($showAll) {
+            $conversationCount = conversations::count();
+            return Response()->json(['result' => $conversationCount]);
+        }
+        if ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
+            $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
+            return Response()->json(['result' => $conversationCount]);
+        }
+        return Response()->json(['result' => "Parameter verification failed"]);
+    }
 
-    //     foreach ($conversationIds as $conversationId) {
-    //         $oldestTimestamp = prompt_histories::where('conversation_id', $conversationId)
-    //             ->min('created_at');
-    //         $latestTimestamp = prompt_histories::where('conversation_id', $conversationId)
-    //             ->max('created_at');
+    public function getAvgQueryPerConversation(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
 
-    //         $oldestDate = Carbon::parse($oldestTimestamp);
-    //         $latestDate = Carbon::parse($latestTimestamp);
+        if ($showAll) {
+            $conversationCount = conversations::count();
+            $queryCount = prompt_histories::count();
+            return Response()->json(['result' => $queryCount / $conversationCount]);
+        }
+        if ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
+            $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
+            $queryCount = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
+            return Response()->json(['result' => $queryCount / $conversationCount]);
+        }
+        return Response()->json(['result' => "Parameter verification failed"]);
+    }
 
-    //         $minuteSpan = $latestDate->diffInMinutes($oldestDate);
-    //         $totalSpan += $minuteSpan;
-    //     }
-    //     return Response()->json(['result' => $totalSpan / $conversationIds->count()]);
-    // }
+    public function getAvgTimePerConversation(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
+        $conversationIds = null;
+        $isValid = false;
+        if ($showAll) {
+            $query = "
+        SELECT
+            ROUND(TIMESTAMPDIFF(SECOND, FROM_UNIXTIME(AVG(start_time)), FROM_UNIXTIME(AVG(end_time)))/60, 2) AS span_time_in_minutes
+        FROM
+            (SELECT conversation_id, UNIX_TIMESTAMP(MIN(created_at)) AS start_time, UNIX_TIMESTAMP(MAX(created_at)) AS end_time FROM prompt_histories GROUP BY conversation_id) AS subquery;
+    ";
+
+            $result = DB::select($query);
+
+            // Access the result as an array of objects
+            $spanTimeInMinutes = $result[0]->span_time_in_minutes;
+            return Response()->json(['result' => floatval($spanTimeInMinutes)]);
+        }
+        if ($startDateTime && $endDateTime) {
+            $startDateTime = Carbon::parse($startDateTime);
+            $endDateTime = Carbon::parse($endDateTime);
+            $conversationIds = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+                ->distinct()
+                ->pluck('conversation_id');
+            $isValid = true;
+        }
+
+        if (!$isValid)
+            return Response()->json(['result' => "Parameter verification failed"]);
+
+        $totalSpan = 0;
+
+        foreach ($conversationIds as $conversationId) {
+            $oldestTimestamp = prompt_histories::where('conversation_id', $conversationId)
+                ->min('created_at');
+            $latestTimestamp = prompt_histories::where('conversation_id', $conversationId)
+                ->max('created_at');
+
+            $oldestDate = Carbon::parse($oldestTimestamp);
+            $latestDate = Carbon::parse($latestTimestamp);
+
+            $minuteSpan = $latestDate->diffInMinutes($oldestDate);
+            $totalSpan += $minuteSpan;
+        }
+        return Response()->json(['result' => $totalSpan / $conversationIds->count()]);
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // daily breakdown section

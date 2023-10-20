@@ -298,10 +298,10 @@ export const getRadialBarChartConfig = themeColors => {
 }
 export const getDonutChartConfig = (themeColors, labelsparam, title) => {
   const donutColors = {
-    series1: '#fdd835',
+    series1: '#32baff',
+    series3: '#fdd835',
     series2: '#00d4bd',
-    series3: '#826bf8',
-    series4: '#32baff',
+    series4: '#826bf8',
     series5: '#ffa1a1',
   }
 
@@ -310,7 +310,7 @@ export const getDonutChartConfig = (themeColors, labelsparam, title) => {
   return {
     stroke: { width: 0 },
     labels: [...labelsparam],
-    colors: [donutColors.series1, donutColors.series5, donutColors.series3, donutColors.series2],
+    colors: [donutColors.series1, donutColors.series4, donutColors.series2, donutColors.series3],
     dataLabels: {
       enabled: true,
       formatter: val => `${parseInt(val, 10)}%`,
