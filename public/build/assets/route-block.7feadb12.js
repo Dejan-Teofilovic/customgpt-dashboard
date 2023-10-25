@@ -1,1 +1,0 @@
-import{t as n,a7 as u}from"./main.a51c163a.js";const{theme:m,skin:e}=n(),o=(a,t,r,i,s=!1)=>u(()=>m.value==="light"?e.value==="bordered"&&s?r:a:e.value==="bordered"&&s?i:t),c="/build/assets/misc-mask-dark.d10426f0.png",d="/build/assets/misc-mask-light.d25607d4.png",k={};export{d as a,k as b,c as m,o as u};
