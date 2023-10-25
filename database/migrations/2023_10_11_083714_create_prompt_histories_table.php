@@ -13,19 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('prompt_histories', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('project_id')->nullable(false);
-            $table->longText('user_query')->nullable();
-            $table->longText('openai_prompt')->nullable();
-            $table->longText('openai_response')->nullable();
-            $table->timestamps();
-            $table->string('user_query_hash', 100)->nullable();
-            $table->json('citations')->nullable();
-            $table->unsignedBigInteger('conversation_id')->nullable();
-            $table->foreign('conversation_id')->references('id')->on('conversations');
-        });
+        // Schema::create('prompt_histories', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->unsignedBigInteger('user_id')->nullable();
+        //     $table->unsignedBigInteger('project_id')->nullable(false);
+        //     $table->longText('user_query')->nullable();
+        //     $table->longText('openai_prompt')->nullable();
+        //     $table->longText('openai_response')->nullable();
+        //     $table->timestamps();
+        //     $table->string('user_query_hash', 100)->nullable();
+        //     $table->json('citations')->nullable();
+        //     $table->unsignedBigInteger('conversation_id')->nullable();
+        //     $table->foreign('conversation_id')->references('id')->on('conversations');
+        // });
     }
 
     /**

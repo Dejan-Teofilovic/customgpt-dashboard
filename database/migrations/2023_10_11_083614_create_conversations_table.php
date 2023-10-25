@@ -13,16 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('conversations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps(0);
-            $table->softDeletes();
-            $table->string('name', 255)->nullable(false);
-            $table->unsignedBigInteger('project_id')->nullable();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->string('session_id', 255)->nullable(false);
-            // $table->foreign('session_id')->references('id')->on('sessions');
-        });
+        // Schema::create('conversations', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->timestamps(0);
+        //     $table->softDeletes();
+        //     $table->string('name', 255)->nullable(false);
+        //     $table->unsignedBigInteger('project_id')->nullable();
+        //     $table->unsignedBigInteger('created_by')->nullable();
+        //     $table->string('session_id', 255)->nullable(false);
+        //     // $table->foreign('session_id')->references('id')->on('sessions');
+        // });
     }
 
     /**

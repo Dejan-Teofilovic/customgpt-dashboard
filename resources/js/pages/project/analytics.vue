@@ -14,22 +14,22 @@
     </VRow>
     <VRow>
       <VCol cols="3">
-        <VCard title="Users">
+        <VCard title="Users" :style="{ height: '100%' }">
           <Piecharts :key="0" :labels="piechartsLabels[0]" :series="piechartsSeries[0]" title="Users" />
         </VCard>
       </VCol>
       <VCol cols="3">
-        <VCard title="Source">
+        <VCard title="Source" :style="{ height: '100%' }">
           <Piecharts :key="1" :labels="piechartsLabels[1]" :series="piechartsSeries[1]" title="Source" />
         </VCard>
       </VCol>
       <VCol cols="3">
-        <VCard title="Browsers">
+        <VCard title="Browsers" :style="{ height: '100%' }">
           <Piecharts :key="2" :labels="piechartsLabels[2]" :series="piechartsSeries[2]" title="Browsers" />
         </VCard>
       </VCol>
       <VCol cols="3">
-        <VCard title="Query Status">
+        <VCard title="Query Status" :style="{ height: '100%' }">
           <Piecharts :key="3" :labels="piechartsLabels[3]" :series="piechartsSeries[3]" title="Query Status" />
         </VCard>
       </VCol>
@@ -59,10 +59,22 @@ import DailyBreakdownCard from '@/views/project/analytics/DailyBreakdownCard.vue
 import Piecharts from '@/views/project/analytics/Piecharts.vue'
 import QueriesCard from '@/views/project/analytics/QueriesCard.vue'
 import UserLocationCard from '@/views/project/analytics/UserLocationCard.vue'
+import Echo from "laravel-echo";
 import axiosIns from '../../plugins/axios'
 import VueApexCharts from 'vue3-apexcharts'
 
 const globalStore = useGlobalStore()
+
+window.Echo.channel('my-channel')
+  .listen('MyEvent', (data) => {
+    console.log(data)
+    if (globalStore[data.setter]) {
+      globalStore[data.setter](data.result);
+    } else {
+      console.error(`Function ${data.setter} not found in globalStore.`);
+    }
+    // Handle the real-time data here.
+  });
 
 // Watch for changes in the dateRange and fetch data when it changes
 watch(() => globalStore.dateRange, (newDateRange, oldDateRange) => {
@@ -98,7 +110,15 @@ const piechartsSeries = reactive([[], [], [], []])
 // Lifecycle hooks
 onMounted(() => {
   globalStore.fetchAllData()
-},
+
+  //NOTE - Listen the proper port for broadcasting in laravel
+  // window.Echo.channel("dashboard")
+  //   .listen("testevent", (e) => {
+  //     debugger
+  //     messages.push(e.message);
+  //   });
+
+}
 )
 
 onUnmounted(() => {
@@ -137,4 +157,13 @@ watch(() => globalStore.barchartQueryStatus, newTotalQuery => {
   piechartsLabels[3] = arr1
   piechartsSeries[3] = arr2
 })
+
+//!SECTION This is the section for broadcasting with laravel + vue
+const messages = ref([])
+const newMessage = ref("");
+
+const sendMessage = () => {
+  axiosIns.post("/send", { message: this.newMessage });
+  this.newMessage = "";
+}
 </script>

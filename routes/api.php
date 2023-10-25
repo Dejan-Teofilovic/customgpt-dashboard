@@ -43,6 +43,7 @@ Route::get('/analytics/barchart-query-status', [AnalyticsController::class, 'get
 
 Route::get('/analytics/total-query-hourly', [AnalyticsController::class, 'getQueryByHourly']);
 Route::get('/analytics/total-query-daily', [AnalyticsController::class, 'getQueryDaily']);
+Route::get('/analytics/test', [AnalyticsController::class, 'test']);
 
 
 // Route::get('/analytics/queries', [AnalyticsController::class, 'queries']);

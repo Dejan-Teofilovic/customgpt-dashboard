@@ -22,16 +22,16 @@ const selectTab = index => {
   globalStore.setcurrentSelectedDailyBreakdown(index)
 
   const urls = [{ endpoint: 'daily-breakdown-query', property: 'dailyBreakdownQuery' },
-    { endpoint: 'daily-breakdown-response-start-time', property: 'dailyBreakdownResponseStartTime' },
-    { endpoint: 'daily-breakdown-response-end-time', property: 'dailyBreakdownResponseEndTime' },
-    { endpoint: 'daily-breakdown-input-word', property: 'dailyBreakdownInputWord' },
-    { endpoint: 'daily-breakdown-output-word', property: 'dailyBreakdownOutputWord' },
-    { endpoint: 'daily-breakdown-conversations', property: 'dailyBreakdownConversations' },
-    { endpoint: 'daily-breakdown-query-per-conversation', property: 'dailyBreakdownQueryPerConversation' },
-    { endpoint: 'daily-breakdown-conversation-time', property: 'dailyBreakdownConversationTime' }]
+  { endpoint: 'daily-breakdown-response-start-time', property: 'dailyBreakdownResponseStartTime' },
+  { endpoint: 'daily-breakdown-response-end-time', property: 'dailyBreakdownResponseEndTime' },
+  { endpoint: 'daily-breakdown-input-word', property: 'dailyBreakdownInputWord' },
+  { endpoint: 'daily-breakdown-output-word', property: 'dailyBreakdownOutputWord' },
+  { endpoint: 'daily-breakdown-conversations', property: 'dailyBreakdownConversations' },
+  { endpoint: 'daily-breakdown-query-per-conversation', property: 'dailyBreakdownQueryPerConversation' },
+  { endpoint: 'daily-breakdown-conversation-time', property: 'dailyBreakdownConversationTime' }]
 
-  globalStore.fetchDataFromApi(urls[index].endpoint, urls[index].property)
   currentTab.value = index
+  globalStore.fetchDataFromApi(urls[index].endpoint, urls[index].property)
 }
 
 
@@ -69,6 +69,7 @@ const chartConfigs = computed(() => {
 
   return {
     title: buttonData.value[currentTab.value].title,
+    key: new Date().toString(),
     icon: buttonData.value[currentTab.value].icon,
     chartOptions: {
       chart: {
@@ -98,7 +99,6 @@ const chartConfigs = computed(() => {
         if (index == highlightedIndex.value) {
           return currentTheme.primary
         }
-        
         return labelPrimaryColor
       }),
       dataLabels: {
@@ -199,6 +199,8 @@ const variablesToWatch = [
 // Create a watch statement for each variable
 variablesToWatch.forEach(variableName => {
   watch(() => eval(variableName), newTotalQuery => {
+    console.log("-------------------------------------");
+    console.log(newTotalQuery)
     let stat = chartConfigs.value
     const convertedObject = {}
     let biggest = 0
@@ -230,74 +232,42 @@ variablesToWatch.forEach(variableName => {
     chartData.value[currentTab.value].length = 0
     chartLabel.value[currentTab.value] = Array.from(Object.keys(convertedObject))
     chartData.value[currentTab.value] = Array.from(Object.values(convertedObject))
-    console.log(beggestIndex)
     highlightedIndex.value = beggestIndex
   })
 })
 </script>
 
 <template>
-  <VCard
-    title="Daily Breakdown"
-    subtitle="Last 7 days"
-  >
+  <VCard title="Daily Breakdown" subtitle="Last 7 days">
     <template #append>
       <div class="mt-n4 me-n2">
-        <VBtn
-          icon
-          size="x-small"
-          variant="plain"
-          color="default"
-        />
+        <VBtn icon size="x-small" variant="plain" color="default" />
       </div>
     </template>
 
     <VCardText>
       <div :style="{ display: 'flex', flexWrap: 'wrap' }">
-        <div
-          v-for="(report, index) in buttonData"
-          :key="report.title"
-          class="tab"
-          :class="{
+        <div v-for="(report, index) in buttonData" :key="report.title" class="tab" :class="{
+          'selected': currentTab === index,
+          'dashed-border': currentTab !== index
+        }" @click="selectTab(index)">
+          <div class="daily-breakdown-button" :class="{
             'selected': currentTab === index,
             'dashed-border': currentTab !== index
-          }"
-          @click="selectTab(index)"
-        >
-          <div
-            class="daily-breakdown-button"
-            :class="{
-              'selected': currentTab === index,
-              'dashed-border': currentTab !== index
-            }"
-          >
-            <VAvatar
-              rounded
-              size="38"
-              :color="currentTab === index ? 'primary' : 'secondary'"
-              variant="tonal"
-              class="mb-1"
-            >
+          }">
+            <VAvatar rounded size="38" :color="currentTab === index ? 'primary' : 'secondary'" variant="tonal"
+              class="mb-1">
               <VIcon :icon="report.icon" />
             </VAvatar>
-            <p
-              class="mb-0"
-              :style="{ textAlign: 'center' }"
-            >
+            <p class="mb-0" :style="{ textAlign: 'center' }">
               {{ report.title }}
             </p>
           </div>
         </div>
       </div>
 
-      <VueApexCharts
-        ref="refVueApexChart"
-        :key="chartConfigs.title"
-        :options="chartConfigs.chartOptions"
-        :series="chartConfigs.series"
-        height="240"
-        class="mt-3"
-      />
+      <VueApexCharts ref="refVueApexChart" :key="chartConfigs.key" :options="chartConfigs.chartOptions"
+        :series="chartConfigs.series" height="240" class="mt-3" />
     </VCardText>
   </VCard>
 </template>

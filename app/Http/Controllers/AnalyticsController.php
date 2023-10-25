@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\testevent;
+use App\Events\MyEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\conversation_debug_info;
@@ -9,6 +11,32 @@ use App\Models\prompt_histories;
 use App\Models\prompts_metadata;
 use App\Models\conversations;
 use App\Models\dashboard;
+
+use App\Jobs\AnalyticsTotalQueryCountJob;
+use App\Jobs\GetAvgInputWordsJob;
+use App\Jobs\GetAvgOutputWordsJob;
+use App\Jobs\GetAvgQueryPerConversationJob;
+use App\Jobs\GetAvgResponseEndTimeJob;
+use App\Jobs\GetAvgResponseStartTimeJob;
+use App\Jobs\GetAvgTimePerConversationJob;
+use App\Jobs\GetBarchartBrowsersJob;
+use App\Jobs\GetBarchartQueryStatusJob;
+use App\Jobs\GetBarchartSourceJob;
+use App\Jobs\GetBarchartUsersJob;
+use App\Jobs\GetDailyBreakdownConversationsJob;
+use App\Jobs\GetDailyBreakdownConversationTimeJob;
+use App\Jobs\GetDailyBreakdownInputWordJob;
+use App\Jobs\GetDailyBreakdownOutputWordJob;
+use App\Jobs\GetDailyBreakdownQueryJob;
+use App\Jobs\GetDailyBreakdownQueryPerConversationJob;
+use App\Jobs\GetDailyBreakdownResponseEndTimeJob;
+use App\Jobs\GetDailyBreakdownResponseStartTimeJob;
+use App\Jobs\GetQueryByHourlyJob;
+use App\Jobs\GetQueryDailyJob;
+use App\Jobs\GetTotalConversationCountJob;
+use App\Jobs\GetTotalQueryCountJob;
+use App\Jobs\GetUserLocationJob;
+use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
@@ -581,18 +609,9 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($showAll) {
-            $queryCount = prompt_histories::count();
-        } elseif ($startDateTime && $endDateTime) {
-            $queryCount = prompt_histories::where(function ($query) use ($startDateTime, $endDateTime) {
-                $query->where('created_at', '>=', Carbon::parse($startDateTime))
-                    ->where('created_at', '<=', Carbon::parse($endDateTime));
-            })->count();
-        } else {
-            return response()->json(['result' => "Parameter verification failed"], 400);
-        }
+        dispatch(new GetTotalQueryCountJob($startDateTime, $endDateTime, $showAll));
 
-        return response()->json(['result' => $queryCount]);
+        return 'Dispatcher has been started!';
     }
 
     public function getAvgResponseEndTime(Request $request)
@@ -601,17 +620,19 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($showAll) {
-            $avgResponseEnd = prompts_metadata::average('response_time');
-        } elseif ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->average('response_time');
-        } else {
-            return Response()->json(['result' => "Parameter verification failed"]);
-        }
+        dispatch(new GetAvgResponseEndTimeJob($startDateTime, $endDateTime, $showAll));
+        // if ($showAll) {
+        //     $avgResponseEnd = prompts_metadata::average('response_time');
+        // } elseif ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->average('response_time');
+        // } else {
+        //     return Response()->json(['result' => "Parameter verification failed"]);
+        // }
 
-        return Response()->json(['avgResponseEnd' => $avgResponseEnd]);
+        // return Response()->json(['avgResponseEnd' => $avgResponseEnd]);
+        return 'dispatcher has been started!';
     }
 
     public function getAvgResponseStartTime(Request $request)
@@ -619,18 +640,19 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-
-        if ($showAll) {
-            $avgResponseEnd = prompts_metadata::average('response_time');
-            return Response()->json(['avgResponseEnd' => 1.2]);
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->avg('response_time');
-            return Response()->json(['avgResponseEnd' => 1.3]);
-        }
-        return Response()->json(['result' => "Parameter verification failed"]);
+        dispatch(new GetAvgResponseStartTimeJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // if ($showAll) {
+        //     $avgResponseEnd = prompts_metadata::average('response_time');
+        //     return Response()->json(['avgResponseEnd' => 1.2]);
+        // }
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $avgResponseEnd = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])->avg('response_time');
+        //     return Response()->json(['avgResponseEnd' => 1.3]);
+        // }
+        // return Response()->json(['result' => "Parameter verification failed"]);
     }
 
     public function getAvgInputWords(Request $request)
@@ -639,38 +661,40 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($showAll) {
-            // Use the query builder to select the specified column and calculate the average word count
-            $averageWordCount = prompt_histories::select(
-                DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count')
-            )->first()->average_word_count;
+        dispatch(new GetAvgInputWordsJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // if ($showAll) {
+        //     // Use the query builder to select the specified column and calculate the average word count
+        //     $averageWordCount = prompt_histories::select(
+        //         DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count')
+        //     )->first()->average_word_count;
 
-            // Handle cases where there are no records
-            $averageWordCount = $averageWordCount ?: 0;
-            return Response()->json(['result' => intval($averageWordCount)]);
-        }
+        //     // Handle cases where there are no records
+        //     $averageWordCount = $averageWordCount ?: 0;
+        //     return Response()->json(['result' => intval($averageWordCount)]);
+        // }
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-            // Perform the query to calculate average word count for 'user_query' for each day
-            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count'))
-                ->get();
+        //     // Perform the query to calculate average word count for 'user_query' for each day
+        //     $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count'))
+        //         ->get();
 
-            // Calculate the overall average word count
-            $totalWordCount = 0;
-            $recordCount = $result->count();
-            foreach ($result as $row) {
-                $totalWordCount += $row->average_word_count;
-            }
-            $averageWordCount = $recordCount > 0 ? ($totalWordCount / $recordCount) : 0;
-            return Response()->json(['result' => $averageWordCount]);
-        }
+        //     // Calculate the overall average word count
+        //     $totalWordCount = 0;
+        //     $recordCount = $result->count();
+        //     foreach ($result as $row) {
+        //         $totalWordCount += $row->average_word_count;
+        //     }
+        //     $averageWordCount = $recordCount > 0 ? ($totalWordCount / $recordCount) : 0;
+        //     return Response()->json(['result' => $averageWordCount]);
+        // }
 
-        return Response()->json(['result' => "Parameter verification failed"]);
+        // return Response()->json(['result' => "Parameter verification failed"]);
     }
 
     public function getAvgOutputWords(Request $request)
@@ -678,39 +702,40 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
+        dispatch(new GetAvgOutputWordsJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // if ($showAll) {
+        //     // Use the query builder to select the specified column and calculate the average word count
+        //     $averageWordCount = prompt_histories::select(
+        //         DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count')
+        //     )->first()->average_word_count;
 
-        if ($showAll) {
-            // Use the query builder to select the specified column and calculate the average word count
-            $averageWordCount = prompt_histories::select(
-                DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count')
-            )->first()->average_word_count;
+        //     // Handle cases where there are no records
+        //     $averageWordCount = $averageWordCount ?: 0;
+        //     return Response()->json(['result' => intval($averageWordCount)]);
+        // }
 
-            // Handle cases where there are no records
-            $averageWordCount = $averageWordCount ?: 0;
-            return Response()->json(['result' => intval($averageWordCount)]);
-        }
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        //     // Perform the query to calculate average word count for 'openai_response' for each day
+        //     $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count'))
+        //         ->get();
 
-            // Perform the query to calculate average word count for 'openai_response' for each day
-            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count'))
-                ->get();
+        //     // Calculate the overall average word count
+        //     $totalWordCount = 0;
+        //     $recordCount = $result->count();
+        //     foreach ($result as $row) {
+        //         $totalWordCount += $row->average_word_count;
+        //     }
+        //     $averageWordCount = $recordCount > 0 ? ($totalWordCount / $recordCount) : 0;
+        //     return Response()->json(['result' => $averageWordCount]);
+        // }
 
-            // Calculate the overall average word count
-            $totalWordCount = 0;
-            $recordCount = $result->count();
-            foreach ($result as $row) {
-                $totalWordCount += $row->average_word_count;
-            }
-            $averageWordCount = $recordCount > 0 ? ($totalWordCount / $recordCount) : 0;
-            return Response()->json(['result' => $averageWordCount]);
-        }
-
-        return Response()->json(['result' => "Parameter verification failed"]);
+        // return Response()->json(['result' => "Parameter verification failed"]);
     }
 
 
@@ -719,18 +744,19 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-
-        if ($showAll) {
-            $conversationCount = conversations::count();
-            return Response()->json(['result' => $conversationCount]);
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-            return Response()->json(['result' => $conversationCount]);
-        }
-        return Response()->json(['result' => "Parameter verification failed"]);
+        dispatch(new GetTotalConversationCountJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // if ($showAll) {
+        //     $conversationCount = conversations::count();
+        //     return Response()->json(['result' => $conversationCount]);
+        // }
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
+        //     return Response()->json(['result' => $conversationCount]);
+        // }
+        // return Response()->json(['result' => "Parameter verification failed"]);
     }
 
     public function getAvgQueryPerConversation(Request $request)
@@ -738,20 +764,21 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-
-        if ($showAll) {
-            $conversationCount = conversations::count();
-            $queryCount = prompt_histories::count();
-            return Response()->json(['result' => $queryCount / $conversationCount]);
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-            $queryCount = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-            return Response()->json(['result' => $queryCount / $conversationCount]);
-        }
-        return Response()->json(['result' => "Parameter verification failed"]);
+        dispatch(new GetAvgQueryPerConversationJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // if ($showAll) {
+        //     $conversationCount = conversations::count();
+        //     $queryCount = prompt_histories::count();
+        //     return Response()->json(['result' => $queryCount / $conversationCount]);
+        // }
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $conversationCount = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
+        //     $queryCount = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
+        //     return Response()->json(['result' => $queryCount / $conversationCount]);
+        // }
+        // return Response()->json(['result' => "Parameter verification failed"]);
     }
 
     public function getAvgTimePerConversation(Request $request)
@@ -759,49 +786,51 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-        $conversationIds = null;
-        $isValid = false;
-        if ($showAll) {
-            $query = "
-        SELECT
-            ROUND(TIMESTAMPDIFF(SECOND, FROM_UNIXTIME(AVG(start_time)), FROM_UNIXTIME(AVG(end_time)))/60, 2) AS span_time_in_minutes
-        FROM
-            (SELECT conversation_id, UNIX_TIMESTAMP(MIN(created_at)) AS start_time, UNIX_TIMESTAMP(MAX(created_at)) AS end_time FROM prompt_histories GROUP BY conversation_id) AS subquery;
-    ";
+        dispatch(new GetAvgTimePerConversationJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // $conversationIds = null;
+        //     $isValid = false;
+        //     if ($showAll) {
+        //         $query = "
+        //     SELECT
+        //         ROUND(TIMESTAMPDIFF(SECOND, FROM_UNIXTIME(AVG(start_time)), FROM_UNIXTIME(AVG(end_time)))/60, 2) AS span_time_in_minutes
+        //     FROM
+        //         (SELECT conversation_id, UNIX_TIMESTAMP(MIN(created_at)) AS start_time, UNIX_TIMESTAMP(MAX(created_at)) AS end_time FROM prompt_histories GROUP BY conversation_id) AS subquery;
+        // ";
 
-            $result = DB::select($query);
+        //         $result = DB::select($query);
 
-            // Access the result as an array of objects
-            $spanTimeInMinutes = $result[0]->span_time_in_minutes;
-            return Response()->json(['result' => floatval($spanTimeInMinutes)]);
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $conversationIds = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->distinct()
-                ->pluck('conversation_id');
-            $isValid = true;
-        }
+        //         // Access the result as an array of objects
+        //         $spanTimeInMinutes = $result[0]->span_time_in_minutes;
+        //         return Response()->json(['result' => floatval($spanTimeInMinutes)]);
+        //     }
+        //     if ($startDateTime && $endDateTime) {
+        //         $startDateTime = Carbon::parse($startDateTime);
+        //         $endDateTime = Carbon::parse($endDateTime);
+        //         $conversationIds = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //             ->distinct()
+        //             ->pluck('conversation_id');
+        //         $isValid = true;
+        //     }
 
-        if (!$isValid)
-            return Response()->json(['result' => "Parameter verification failed"]);
+        //     if (!$isValid)
+        //         return Response()->json(['result' => "Parameter verification failed"]);
 
-        $totalSpan = 0;
+        //     $totalSpan = 0;
 
-        foreach ($conversationIds as $conversationId) {
-            $oldestTimestamp = prompt_histories::where('conversation_id', $conversationId)
-                ->min('created_at');
-            $latestTimestamp = prompt_histories::where('conversation_id', $conversationId)
-                ->max('created_at');
+        //     foreach ($conversationIds as $conversationId) {
+        //         $oldestTimestamp = prompt_histories::where('conversation_id', $conversationId)
+        //             ->min('created_at');
+        //         $latestTimestamp = prompt_histories::where('conversation_id', $conversationId)
+        //             ->max('created_at');
 
-            $oldestDate = Carbon::parse($oldestTimestamp);
-            $latestDate = Carbon::parse($latestTimestamp);
+        //         $oldestDate = Carbon::parse($oldestTimestamp);
+        //         $latestDate = Carbon::parse($latestTimestamp);
 
-            $minuteSpan = $latestDate->diffInMinutes($oldestDate);
-            $totalSpan += $minuteSpan;
-        }
-        return Response()->json(['result' => $totalSpan / $conversationIds->count()]);
+        //         $minuteSpan = $latestDate->diffInMinutes($oldestDate);
+        //         $totalSpan += $minuteSpan;
+        //     }
+        //     return Response()->json(['result' => $totalSpan / $conversationIds->count()]);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -809,33 +838,34 @@ class AnalyticsController extends Controller
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function getDailyBreakdownQuery(Request $request)
     {
-        Log::info('--------------Start of getDailyBreakdownQuery----------------');
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-        $isValid = false;
-        if ($showAll) {
-            $endDateTime = Carbon::now();
-            $startDateTime = $endDateTime->copy()->subDays(7);
-            $isValid = true;
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $isValid = true;
-        }
-        if (!$isValid)
-            return Request()->json(['result' => 'failed parameter verification']);
-        // Perform the query to count rows for each day
-        $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-            ->groupBy(DB::raw('DATE(created_at)'))
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-            ->get();
+        dispatch(new GetDailyBreakdownQueryJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // $isValid = false;
+        // if ($showAll) {
+        //     $endDateTime = Carbon::now();
+        //     $startDateTime = $endDateTime->copy()->subDays(7);
+        //     $isValid = true;
+        // }
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $isValid = true;
+        // }
+        // if (!$isValid)
+        //     return Request()->json(['result' => 'failed parameter verification']);
+        // // Perform the query to count rows for each day
+        // $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //     ->groupBy(DB::raw('DATE(created_at)'))
+        //     ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+        //     ->get();
 
-        // Convert the results to an associative array for JSON response
-        $report = $result->pluck('count', 'date')->all();
-        Log::info('--------------End of getDailyBreakdownQuery----------------');
-        return $report;
+        // // Convert the results to an associative array for JSON response
+        // $report = $result->pluck('count', 'date')->all();
+        // Log::info('--------------End of getDailyBreakdownQuery----------------');
+        // return $report;
     }
 
     public function getDailyBreakdownResponseStartTime(Request $request)
@@ -844,43 +874,31 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-
-            // Perform the query to count rows for each day
-            $result = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(response_time) as count'))
-                ->get();
-
-            // Convert the results to an associative array for JSON response
-            $report = $result->pluck('count', 'date')->all();
-            return $report;
-        } else
-            return Response()->json(['result' => 'Parameter verification failed']);
+        dispatch(new GetDailyBreakdownResponseStartTimeJob($startDateTime, $endDateTime, $showAll));
+        return 'Dispatcher has been started!';
     }
     public function getDailyBreakdownResponseEndTime(Request $request)
     {
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
+        dispatch(new GetDailyBreakdownResponseEndTimeJob($startDateTime, $endDateTime));
+        return 'dispatcher has been started!';
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        //     // Perform the query to count rows for each day
+        //     $result = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(response_time) as count'))
+        //         ->get();
 
-            // Perform the query to count rows for each day
-            $result = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(response_time) as count'))
-                ->get();
-
-            // Convert the results to an associative array for JSON response
-            $report = $result->pluck('count', 'date')->all();
-            return $report;
-        }
-        return Response()->json(['result' => 'Failed']);
+        //     // Convert the results to an associative array for JSON response
+        //     $report = $result->pluck('count', 'date')->all();
+        //     return $report;
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
     public function getDailyBreakdownInputWord(Request $request)
@@ -889,20 +907,22 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        dispatch(new GetDailyBreakdownInputWordJob($startDateTime, $endDateTime));
+        return 'dispatcher has been started!';
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-            // Perform the query to calculate average word count for 'user_query' for each day
-            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count'))
-                ->get();
+        //     // Perform the query to calculate average word count for 'user_query' for each day
+        //     $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(user_query) - LENGTH(REPLACE(user_query, " ", "")) + 1) as average_word_count'))
+        //         ->get();
 
-            $report = $result->pluck('average_word_count', 'date')->all();
-            return $report;
-        }
-        return Response()->json(['result' => 'Failed']);
+        //     $report = $result->pluck('average_word_count', 'date')->all();
+        //     return $report;
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
     public function getDailyBreakdownOutputWord(Request $request)
@@ -911,20 +931,22 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        dispatch(new GetDailyBreakdownOutputWordJob($startDateTime, $endDateTime));
+        return 'dispatcher has been started!';
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-            // Perform the query to calculate average word count for 'user_query' for each day
-            $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count'))
-                ->get();
+        //     // Perform the query to calculate average word count for 'user_query' for each day
+        //     $result = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(LENGTH(openai_response) - LENGTH(REPLACE(openai_response, " ", "")) + 1) as average_word_count'))
+        //         ->get();
 
-            $report = $result->pluck('average_word_count', 'date')->all();
-            return $report;
-        }
-        return Response()->json(['result' => 'Failed']);
+        //     $report = $result->pluck('average_word_count', 'date')->all();
+        //     return $report;
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
     public function getDailyBreakdownConversations(Request $request)
@@ -933,21 +955,23 @@ class AnalyticsController extends Controller
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        dispatch(new GetDailyBreakdownConversationsJob($startDateTime, $endDateTime));
+        return 'dispatcher has been started!';
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-            // Perform the query to count rows for each day
-            $result = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-                ->get();
+        //     // Perform the query to count rows for each day
+        //     $result = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+        //         ->get();
 
-            // Convert the results to an associative array for JSON response
-            $report = $result->pluck('count', 'date')->all();
-            return $report;
-        }
-        return Response()->json(['result' => 'Failed']);
+        //     // Convert the results to an associative array for JSON response
+        //     $report = $result->pluck('count', 'date')->all();
+        //     return $report;
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
     public function getDailyBreakdownQueryPerConversation(Request $request)
@@ -955,36 +979,37 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
+        dispatch(new GetDailyBreakdownQueryPerConversationJob($startDateTime, $endDateTime));
+        return 'dispatcher has been started!';
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        //     $resultFinal = [];
+        //     // Perform the query to count rows for each day
+        //     $resultConversations = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+        //         ->get();
+        //     $arrConversations = $resultConversations->pluck('count', 'date');
+        //     $resultQueries = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->groupBy(DB::raw('DATE(created_at)'))
+        //         ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+        //         ->get();
+        //     $arrQueries = $resultQueries->pluck('count', 'date');
 
-            $resultFinal = [];
-            // Perform the query to count rows for each day
-            $resultConversations = conversations::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-                ->get();
-            $arrConversations = $resultConversations->pluck('count', 'date');
-            $resultQueries = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->groupBy(DB::raw('DATE(created_at)'))
-                ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-                ->get();
-            $arrQueries = $resultQueries->pluck('count', 'date');
+        //     foreach ($arrConversations as $key => $value) {
+        //         # code...
+        //         if ($value != 0) {
+        //             $resultFinal[$key] = $arrQueries[$key] / $value;
+        //         }
 
-            foreach ($arrConversations as $key => $value) {
-                # code...
-                if ($value != 0) {
-                    $resultFinal[$key] = $arrQueries[$key] / $value;
-                }
+        //         // Convert the results to an associative array for JSON response
 
-                // Convert the results to an associative array for JSON response
-
-            }
-            return $resultFinal;
-        }
-        return Response()->json(['result' => 'Failed']);
+        //     }
+        //     return $resultFinal;
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
     public function getDailyBreakdownConversationTime(Request $request)
@@ -992,85 +1017,91 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
+        dispatch(new GetDailyBreakdownConversationTimeJob($startDateTime, $endDateTime));
+        return 'dispatcher has been started!';
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
 
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $conversationIds = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->distinct()
+        //         ->pluck('conversation_id');
+        //     $totalSpan = 0;
+        //     $report = [];
+        //     $countAll = [];
+        //     foreach ($conversationIds as $conversationId) {
+        //         $oldestTimestamp = prompt_histories::where('conversation_id', $conversationId)->whereBetween('created_at', [$startDateTime, $endDateTime])
+        //             ->min('created_at');
+        //         $latestTimestamp = prompt_histories::where('conversation_id', $conversationId)->whereBetween('created_at', [$startDateTime, $endDateTime])
+        //             ->max('created_at');
 
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $conversationIds = prompt_histories::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->distinct()
-                ->pluck('conversation_id');
-            $totalSpan = 0;
-            $report = [];
-            $countAll = [];
-            foreach ($conversationIds as $conversationId) {
-                $oldestTimestamp = prompt_histories::where('conversation_id', $conversationId)->whereBetween('created_at', [$startDateTime, $endDateTime])
-                    ->min('created_at');
-                $latestTimestamp = prompt_histories::where('conversation_id', $conversationId)->whereBetween('created_at', [$startDateTime, $endDateTime])
-                    ->max('created_at');
+        //         // Check if the dates are valid
+        //         $oldestDate = Carbon::parse($oldestTimestamp);
+        //         $latestDate = Carbon::parse($latestTimestamp);
+        //         if ($oldestDate->isValid() && $latestDate->isValid()) {
 
-                // Check if the dates are valid
-                $oldestDate = Carbon::parse($oldestTimestamp);
-                $latestDate = Carbon::parse($latestTimestamp);
-                if ($oldestDate->isValid() && $latestDate->isValid()) {
-
-                    $minuteSpan = $latestDate->diffInMinutes($oldestDate);
-                    $report[$oldestDate->toDateString()] = isset($report[$oldestDate->toDateString()]) ? ((int)$report[$oldestDate->toDateString()]) + $minuteSpan : $minuteSpan;
-                    $countAll[$oldestDate->toDateString()] = isset($countAll[$oldestDate->toDateString()]) ? ((int)$countAll[$oldestDate->toDateString()]) + 1 : 1;
-                }
-            }
-            $reportFinal = [];
-            foreach ($report as $key => $value) {
-                $reportFinal[$key] = $value / $countAll[$key];
-            }
-            ksort($reportFinal);
-            return $reportFinal;
-        }
-        return Response()->json(['result' => 'Failed']);
+        //             $minuteSpan = $latestDate->diffInMinutes($oldestDate);
+        //             $report[$oldestDate->toDateString()] = isset($report[$oldestDate->toDateString()]) ? ((int)$report[$oldestDate->toDateString()]) + $minuteSpan : $minuteSpan;
+        //             $countAll[$oldestDate->toDateString()] = isset($countAll[$oldestDate->toDateString()]) ? ((int)$countAll[$oldestDate->toDateString()]) + 1 : 1;
+        //         }
+        //     }
+        //     $reportFinal = [];
+        //     foreach ($report as $key => $value) {
+        //         $reportFinal[$key] = $value / $countAll[$key];
+        //     }
+        //     ksort($reportFinal);
+        //     return $reportFinal;
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
     public function getUserLocation()
     {
-        $USAcount = prompts_metadata::where('location', 'like', '%United States%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $turkeyCount = prompts_metadata::where('location', 'like', '%Turkey%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $argentinaCount = prompts_metadata::where('location', 'like', '%Argentina%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $japanCount = prompts_metadata::where('location', 'like', '%Japan%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $canadaCount = prompts_metadata::where('location', 'like', '%Canada%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $angolaCount = prompts_metadata::where('location', 'like', '%Angola%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $chinaCount = prompts_metadata::where('location', 'like', '%China%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $pakistanCount = prompts_metadata::where('location', 'like', '%Pakistan%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
-        $portugalCount = prompts_metadata::where('location', 'like', '%Portugal%')
-            ->distinct('user_ip') // Use distinct to count unique user_ips
-            ->count();
+        // dispatch(new GetUserLocationJob());
+        dispatch(new GetUserLocationJob());
+        return 'dispatcher has been started!';
+        // $USAcount = prompts_metadata::where('location', 'like', '%United States%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $turkeyCount = prompts_metadata::where('location', 'like', '%Turkey%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $argentinaCount = prompts_metadata::where('location', 'like', '%Argentina%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $japanCount = prompts_metadata::where('location', 'like', '%Japan%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $canadaCount = prompts_metadata::where('location', 'like', '%Canada%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $angolaCount = prompts_metadata::where('location', 'like', '%Angola%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $chinaCount = prompts_metadata::where('location', 'like', '%China%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $pakistanCount = prompts_metadata::where('location', 'like', '%Pakistan%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
+        // $portugalCount = prompts_metadata::where('location', 'like', '%Portugal%')
+        //     ->distinct('user_ip') // Use distinct to count unique user_ips
+        //     ->count();
 
-        return [
-            'United states' => $USAcount, 'Turkey' => $turkeyCount, 'Argentina' => $turkeyCount, 'Japan' => $japanCount,
-            'Canada' => $canadaCount, 'Angola' => $angolaCount, 'China' => $chinaCount, 'Pakistan' => $pakistanCount, 'Portugal' => $portugalCount,
-        ];
+        // return [
+        //     'United states' => $USAcount, 'Turkey' => $turkeyCount, 'Argentina' => $turkeyCount, 'Japan' => $japanCount,
+        //     'Canada' => $canadaCount, 'Angola' => $angolaCount, 'China' => $chinaCount, 'Pakistan' => $pakistanCount, 'Portugal' => $portugalCount,
+        // ];
     }
 
     public function getBarchartUsers(Request $request)
     {
-        $user = ['Alden' => 65, 'Wajid' => 25, 'Anonymous' => 5];
-        return Response()->json($user);
+        dispatch(new GetBarchartUsersJob());
+        return 'dispatcher has been started!';
+        // $user = ['Alden' => 65, 'Wajid' => 25, 'Anonymous' => 5];
+        // return Response()->json($user);
     }
 
     public function getBarchartSource(Request $request)
@@ -1078,41 +1109,43 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-        if ($showAll) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $countEmbed = prompts_metadata::where('request_source', 'like', '%embed%')->count();
-            $countApi = prompts_metadata::where('request_source', 'like', '%api%')->count();
-            $countDashboard = prompts_metadata::where('request_source', 'like', '%dashboard%')->count();
-            $countLivechat = prompts_metadata::where('request_source', 'like', '%livechat%')->count();
-            $countTotal = $countApi + $countDashboard + $countEmbed + $countLivechat;
-            $result = [
-                'Dashboard' => $countDashboard, 'Embed' => $countEmbed,
-                'Livechat' => $countLivechat, 'API' => $countApi
-            ];
-            arsort($result);
-            return Response()->json($result);
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $countEmbed = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('request_source', 'like', '%embed%')->count();
-            $countApi = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('request_source', 'like', '%api%')->count();
-            $countDashboard = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('request_source', 'like', '%dashboard%')->count();
-            $countLivechat = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('request_source', 'like', '%livechat%')->count();
-            $countTotal = $countApi + $countDashboard + $countEmbed + $countLivechat;
-            $result = [
-                'Dashboard' => $countDashboard, 'Embed' => $countEmbed,
-                'Livechat' => $countLivechat, 'API' => $countApi
-            ];
-            arsort($result);
-            return Response()->json($result);
-        }
-        return Response()->json(['result' => 'Failed']);
+        dispatch(new GetBarchartSourceJob($startDateTime, $endDateTime, $showAll));
+        return 'dispatcher has been started!';
+        // if ($showAll) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $countEmbed = prompts_metadata::where('request_source', 'like', '%embed%')->count();
+        //     $countApi = prompts_metadata::where('request_source', 'like', '%api%')->count();
+        //     $countDashboard = prompts_metadata::where('request_source', 'like', '%dashboard%')->count();
+        //     $countLivechat = prompts_metadata::where('request_source', 'like', '%livechat%')->count();
+        //     $countTotal = $countApi + $countDashboard + $countEmbed + $countLivechat;
+        //     $result = [
+        //         'Dashboard' => $countDashboard, 'Embed' => $countEmbed,
+        //         'Livechat' => $countLivechat, 'API' => $countApi
+        //     ];
+        //     arsort($result);
+        //     return Response()->json($result);
+        // }
+        // if ($startDateTime && $endDateTime) {
+        //     $startDateTime = Carbon::parse($startDateTime);
+        //     $endDateTime = Carbon::parse($endDateTime);
+        //     $countEmbed = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->where('request_source', 'like', '%embed%')->count();
+        //     $countApi = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->where('request_source', 'like', '%api%')->count();
+        //     $countDashboard = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->where('request_source', 'like', '%dashboard%')->count();
+        //     $countLivechat = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
+        //         ->where('request_source', 'like', '%livechat%')->count();
+        //     $countTotal = $countApi + $countDashboard + $countEmbed + $countLivechat;
+        //     $result = [
+        //         'Dashboard' => $countDashboard, 'Embed' => $countEmbed,
+        //         'Livechat' => $countLivechat, 'API' => $countApi
+        //     ];
+        //     arsort($result);
+        //     return Response()->json($result);
+        // }
+        // return Response()->json(['result' => 'Failed']);
     }
 
 
@@ -1121,163 +1154,44 @@ class AnalyticsController extends Controller
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-        if ($showAll) {
-            $totalCount = prompts_metadata::distinct()->select('user_ip')->count();
-            $chromeCount = prompts_metadata::where('user_agent', 'like', '%chrome%')
-                ->distinct('user_ip')
-                ->count();
-            $windowsCount = prompts_metadata::where('user_agent', 'like', '%windows%')
-                ->distinct('user_ip')
-                ->count();
-            $safariCount = prompts_metadata::where('user_agent', 'like', '%safari%')
-                ->distinct('user_ip')
-                ->count();
-            $unknownCount = $totalCount - $chromeCount - $windowsCount - $safariCount;
-            $agentReport = [
-                'chrome' => $chromeCount, 'windows' => $windowsCount, 'safari' => $safariCount,
-                'unknown' => $unknownCount
-            ];
-            arsort($agentReport);
-            return $agentReport;
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $totalCount = prompts_metadata::distinct()->select('user_ip')->count();
-            $chromeCount = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('user_agent', 'like', '%chrome%')
-                ->distinct('user_ip')
-                ->count();
-            $windowsCount = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('user_agent', 'like', '%windows%')
-                ->distinct('user_ip')
-                ->count();
-            $safariCount = prompts_metadata::whereBetween('created_at', [$startDateTime, $endDateTime])
-                ->where('user_agent', 'like', '%safari%')
-                ->distinct('user_ip')
-                ->count();
-            $unknownCount = $totalCount - $chromeCount - $windowsCount - $safariCount;
-            $agentReport = [
-                'chrome' => $chromeCount, 'windows' => $windowsCount, 'safari' => $safariCount,
-                'unknown' => $unknownCount
-            ];
-            arsort($agentReport);
-            return $agentReport;
-        }
-        return Response()->json(['result' => 'Failed']);
+
+        dispatch(new GetBarchartBrowsersJob($startDateTime, $endDateTime, $showAll));
+
+        return 'Dispatcher has been started!';
     }
     public function getBarchartQueryStatus(Request $request)
     {
         $startDateTime = $request->input('start');
         $endDateTime = $request->input('end');
         $showAll = $request->input('showall');
-        if ($showAll) {
-            $totalQueryStatus = conversation_debug_info::count();
-            $successCount = conversation_debug_info::where('status', 'success')->count();
-            $failCount = $totalQueryStatus - $successCount;
-            $statusReport = ['success' => $successCount, 'fail' => $failCount];
-            arsort($statusReport);
-            return $statusReport;
-        }
-        if ($startDateTime && $endDateTime) {
-            $startDateTime = Carbon::parse($startDateTime);
-            $endDateTime = Carbon::parse($endDateTime);
-            $successCount = conversation_debug_info::whereBetween('created_at', [$startDateTime, $endDateTime])->where('status', 'success')
-                ->count();
-            $totalQueryStatus = conversation_debug_info::whereBetween('created_at', [$startDateTime, $endDateTime])->count();
-            // $failedCount = $total- $successCount;
-            $failCount = $totalQueryStatus - $successCount;
 
-            $statusReport = ['success' => $successCount, 'fail' => $failCount];
-            arsort($statusReport);
-            return $statusReport;
-        }
-        return Response()->json(['result' => 'Failed']);
+        dispatch(new GetBarchartQueryStatusJob($startDateTime, $endDateTime, $showAll));
+
+        return 'Dispatcher has been started!';
     }
 
     public function getQueryByHourly(Request $request)
     {
-        Log::info('--------------Start of getQueryByHourly----------------');
         $startDateTime = $request->input('start');
         $showAll = $request->input('showall');
-        $currentDateTime = null;
-        $isValid = false;
 
-        if ($showAll) {
-            $isValid = true;
-            $currentDateTime = Carbon::now();
-        }
+        dispatch(new GetQueryByHourlyJob($startDateTime, $showAll));
 
-        if ($startDateTime) {
-            $currentDateTime = Carbon::parse($startDateTime);
-            $isValid = true;
-        }
-
-        if (!$isValid)
-            return Response()->json(['result' => 'Failed']);
-
-        // Define the time ranges
-        $timeRanges = [
-            ['start' => 0, 'end' => 6],
-            ['start' => 6, 'end' => 9],
-            ['start' => 9, 'end' => 12],
-            ['start' => 12, 'end' => 15],
-            ['start' => 15, 'end' => 18],
-            ['start' => 18, 'end' => 23],
-            ['start' => 23, 'end' => 24], // Note that this range includes 23:00 to 00:00
-        ];
-        $currentDateTime = $currentDateTime->startOfDay();
-
-        // Create an array to store the counts for each time range
-        $countResults = [];
-
-        // Loop through the time ranges and count the rows in each range
-        foreach ($timeRanges as $range) {
-            $startTime = $currentDateTime->copy()->addHours($range['start']);
-            $endTime = $currentDateTime->copy()->addHours($range['end']);
-
-            $count = prompt_histories::whereBetween('created_at', [$startTime, $endTime])->count();
-
-            $countResults[$range['start']] = $count;
-        }
-        Log::info('--------------End of getQueryByHourly----------------');
-        return $countResults;
+        return 'Dispatcher has been started!';
     }
     public function getQueryDaily(Request $request)
     {
-        Log::info('--------------Start of getQueryDaily----------------');
         $startDateTime = $request->input('start');
         $showAll = $request->input('showall');
-        $currentDateTime = null;
-        $isValid = false;
 
-        if ($showAll) {
-            $isValid = true;
-            $currentDateTime = Carbon::now();
-        }
+        dispatch(new GetQueryDailyJob($startDateTime, $showAll));
 
-        if ($startDateTime) {
-            $currentDateTime = Carbon::parse($startDateTime);
-            $isValid = true;
-        }
+        return 'Dispatcher has been started!';
+    }
 
-        if (!$isValid)
-            return Response()->json(['result' => 'Failed']);
-
-        $currentDate = $currentDateTime->startOfWeek();
-
-        // Create an array to store the counts for each time range
-        $countResults = [];
-
-        // Loop through the time ranges and count the rows in each range
-        for ($i = 0; $i < 7; $i++) {
-            # code...
-            $startTime = $currentDate->copy()->addDays($i);
-            $endTime = $currentDate->copy()->addDays($i + 1);
-            $count = prompt_histories::whereBetween('created_at', [$startTime, $endTime])->count();
-            $countResults[$startTime->format('D')] = $count;
-        }
-        Log::info('--------------End of getQueryDaily----------------');
-        return $countResults;
+    public function test(Request $request)
+    {
+        // event(new MyEvent("this is the data from test"));
+        MyEvent::dispatch("this is the data from test");
     }
 }

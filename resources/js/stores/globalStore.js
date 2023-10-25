@@ -7,8 +7,6 @@ import { defineStore } from 'pinia'
 import axios from '../plugins/axios'
 
 const apiEndpoints = [
-  { endpoint: 'total-query-hourly', property: 'totalQueryHourly' },
-  { endpoint: 'total-query-daily', property: 'totalQueryDaily' },
   { endpoint: 'total-query-count', property: 'totalQueryCount' },
   { endpoint: 'avg-response-end-time', property: 'avgResponseEndTime' },
   { endpoint: 'avg-response-start-time', property: 'avgResponseStartTime' },
@@ -24,6 +22,8 @@ const apiEndpoints = [
   { endpoint: 'barchart-source', property: 'barchartSource' },
   { endpoint: 'barchart-browsers', property: 'barchartBrowsers' },
   { endpoint: 'barchart-query-status', property: 'barchartQueryStatus' },
+  { endpoint: 'total-query-hourly', property: 'totalQueryHourly' },
+  { endpoint: 'total-query-daily', property: 'totalQueryDaily' },
 ]
 
 const endPointBreakDown = [
@@ -80,6 +80,75 @@ const useGlobalStore = defineStore('globalStore', {
       this.dateRange = newDateRange
     },
 
+    setTotalQueryCount(value) {
+      this.totalQueryCount = value;
+    },
+    setAvgResponseEndTime(value) {
+      this.avgResponseEndTime = value;
+    },
+    setAvgResponseStartTime(value) {
+      this.avgResponseStartTime = value;
+    },
+    setAvgQueryInputWord(value) {
+      this.avgQueryInputWord = value;
+    },
+    setAvgQueryOutputWord(value) {
+      this.avgQueryOutputWord = value;
+    },
+    setTotalConversationCount(value) {
+      this.totalConversationCount = value;
+    },
+    setAvgQueryPerConversation(value) {
+      this.avgQueryPerConversation = value;
+    },
+    setAvgTimePerConversation(value) {
+      this.avgTimePerConversation = value;
+    },
+    setDailyBreakdownQuery(value) {
+      this.dailyBreakdownQuery = value;
+    },
+    setDailyBreakdownResponseStartTime(value) {
+      this.dailyBreakdownResponseStartTime = value;
+    },
+    setDailyBreakdownResponseEndTime(value) {
+      this.dailyBreakdownResponseEndTime = value;
+    },
+    setDailyBreakdownInputWord(value) {
+      this.dailyBreakdownInputWord = value;
+    },
+    setDailyBreakdownOutputWord(value) {
+      this.dailyBreakdownOutputWord = value;
+    },
+    setDailyBreakdownConversations(value) {
+      this.dailyBreakdownConversations = value;
+    },
+    setDailyBreakdownQueryPerConversation(value) {
+      this.dailyBreakdownQueryPerConversation = value;
+    },
+    setDailyBreakdownConversationTime(value) {
+      this.dailyBreakdownConversationTime = value;
+    },
+    setUserLocation(value) {
+      this.userLocation = value;
+    },
+    setBarchartUsers(value) {
+      this.barchartUsers = value;
+    },
+    setBarchartSource(value) {
+      this.barchartSource = value;
+    },
+    setBarchartBrowsers(value) {
+      this.barchartBrowsers = value;
+    },
+    setBarchartQueryStatus(value) {
+      this.barchartQueryStatus = value;
+    },
+    setTotalQueryHourly(value) {
+      this.totalQueryHourly = value;
+    },
+    setTotalQueryDaily(value) {
+      this.totalQueryDaily = value;
+    },
     /**
      * Set the current selected daily breakdown in the store's state.
      * @param {number} newdata - The new selected daily breakdown.
@@ -111,27 +180,26 @@ const useGlobalStore = defineStore('globalStore', {
 
       const url = `/analytics/${endpoint}${queryFormat}`
       const response = axios.get(url).then(response => {
-        this[stateProperty] = Object.assign({}, response.data)
-        console.log(this[stateProperty])
+        // this[stateProperty] = Object.assign({}, response.data)
+        // console.log(this[stateProperty])
       }, rej => {
         debugger
       }).catch(err => {
         console.error(error)
       })
-
     },
 
     /**
      * Fetch data from multiple API endpoints and update their respective state properties.
-     */
+    */
     fetchAllData() {
+      this.fetchDataFromApi(endPointBreakDown[this.currentSelectedDailyBreakdown].endpoint, endPointBreakDown[this.currentSelectedDailyBreakdown].property)
       // Fetch data from the specified API endpoints and update state properties
       for (const { endpoint, property } of apiEndpoints) {
         this.fetchDataFromApi(endpoint, property)
       }
 
       // Fetch data for the selected daily breakdown endpoint and update its respective state property
-      this.fetchDataFromApi(endPointBreakDown[this.currentSelectedDailyBreakdown].endpoint, endPointBreakDown[this.currentSelectedDailyBreakdown].property)
     },
   },
 }
