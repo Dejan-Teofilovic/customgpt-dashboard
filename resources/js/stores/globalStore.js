@@ -7,23 +7,24 @@ import { defineStore } from 'pinia'
 import axios from '../plugins/axios'
 
 const apiEndpoints = [
-  { endpoint: 'total-query-count', property: 'totalQueryCount' },
-  { endpoint: 'avg-response-end-time', property: 'avgResponseEndTime' },
-  { endpoint: 'avg-response-start-time', property: 'avgResponseStartTime' },
-  { endpoint: 'avg-query-input-word', property: 'avgQueryInputWord' },
-  { endpoint: 'avg-query-output-word', property: 'avgQueryOutputWord' },
+  // { endpoint: 'total-query-count', property: 'totalQueryCount' },
+  // { endpoint: 'avg-response-end-time', property: 'avgResponseEndTime' },
+  // { endpoint: 'avg-response-start-time', property: 'avgResponseStartTime' },
+  // { endpoint: 'avg-query-input-word', property: 'avgQueryInputWord' },
+  // { endpoint: 'avg-query-output-word', property: 'avgQueryOutputWord' },
 
-  { endpoint: 'total-conversation-count', property: 'totalConversationCount' },
-  { endpoint: 'avg-query-per-conversation', property: 'avgQueryPerConversation' },
-  { endpoint: 'avg-time-per-conversation', property: 'avgTimePerConversation' },
+  // { endpoint: 'total-conversation-count', property: 'totalConversationCount' },
+  // { endpoint: 'avg-query-per-conversation', property: 'avgQueryPerConversation' },
+  // { endpoint: 'avg-time-per-conversation', property: 'avgTimePerConversation' },
 
-  { endpoint: 'userlocation', property: 'userLocation' },
-  { endpoint: 'barchart-users', property: 'barchartUsers' },
-  { endpoint: 'barchart-source', property: 'barchartSource' },
-  { endpoint: 'barchart-browsers', property: 'barchartBrowsers' },
-  { endpoint: 'barchart-query-status', property: 'barchartQueryStatus' },
-  { endpoint: 'total-query-hourly', property: 'totalQueryHourly' },
-  { endpoint: 'total-query-daily', property: 'totalQueryDaily' },
+  // { endpoint: 'userlocation', property: 'userLocation' },
+  // { endpoint: 'barchart-users', property: 'barchartUsers' },
+  // { endpoint: 'barchart-source', property: 'barchartSource' },
+  // { endpoint: 'barchart-browsers', property: 'barchartBrowsers' },
+  // { endpoint: 'barchart-query-status', property: 'barchartQueryStatus' },
+  // { endpoint: 'total-query-hourly', property: 'totalQueryHourly' },
+  // { endpoint: 'total-query-daily', property: 'totalQueryDaily' },
+  { endpoint: 'all', property: 'all' },
 ]
 
 const endPointBreakDown = [

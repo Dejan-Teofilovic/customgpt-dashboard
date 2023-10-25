@@ -1189,6 +1189,38 @@ class AnalyticsController extends Controller
         return 'Dispatcher has been started!';
     }
 
+    public function getall(Request $request)
+    {
+        $startDateTime = $request->input('start');
+        $endDateTime = $request->input('end');
+        $showAll = $request->input('showall');
+        dispatch(new GetTotalQueryCountJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetAvgResponseEndTimeJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetAvgResponseStartTimeJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetAvgInputWordsJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetAvgOutputWordsJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetTotalConversationCountJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetAvgQueryPerConversationJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetAvgTimePerConversationJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetDailyBreakdownQueryJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetDailyBreakdownResponseStartTimeJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetDailyBreakdownResponseEndTimeJob($startDateTime, $endDateTime));
+        dispatch(new GetDailyBreakdownInputWordJob($startDateTime, $endDateTime));
+        dispatch(new GetDailyBreakdownOutputWordJob($startDateTime, $endDateTime));
+        dispatch(new GetDailyBreakdownConversationsJob($startDateTime, $endDateTime));
+        dispatch(new GetDailyBreakdownQueryPerConversationJob($startDateTime, $endDateTime));
+        dispatch(new GetDailyBreakdownConversationTimeJob($startDateTime, $endDateTime));
+        dispatch(new GetUserLocationJob());
+        dispatch(new GetBarchartUsersJob());
+        dispatch(new GetBarchartSourceJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetBarchartBrowsersJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetBarchartQueryStatusJob($startDateTime, $endDateTime, $showAll));
+        dispatch(new GetQueryByHourlyJob($startDateTime, $showAll));
+        dispatch(new GetQueryDailyJob($startDateTime, $showAll));
+        // MyEvent::dispatch("this is the data from test");
+        return 'Dispatcher has been started!';
+    }
+
     public function test(Request $request)
     {
         // event(new MyEvent("this is the data from test"));

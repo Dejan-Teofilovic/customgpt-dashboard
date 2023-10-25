@@ -54,7 +54,7 @@ Route::get('/analytics/test', [AnalyticsController::class, 'test']);
 // Route::get('/analytics/total-queries', [AnalyticsController::class, 'totalqueries']);
 // Route::get('/analytics/metadata', [AnalyticsController::class, 'metadata']);
 // Route::get('/analytics/setall', [AnalyticsController::class, 'setall']);
-// Route::get('/analytics/all', [AnalyticsController::class, 'getall']);
+Route::get('/analytics/all', [AnalyticsController::class, 'getall']);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
