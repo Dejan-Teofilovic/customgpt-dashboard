@@ -10,6 +10,7 @@ const vuetifyTheme = useTheme()
 
 // Define the states
 const currentTab = ref(0)
+const currentTabForBarchart = ref(0)
 const refVueApexChart = ref()
 const chartLabel = ref([[], [], [], [], [], [], [], []])
 const chartData = ref([[], [], [], [], [], [], [], []])
@@ -68,9 +69,9 @@ const chartConfigs = computed(() => {
   const labelColor = `rgba(${hexToRgb(currentTheme['on-surface'])},${variableTheme['disabled-opacity']})`
 
   return {
-    title: buttonData.value[currentTab.value].title,
+    title: buttonData.value[currentTabForBarchart.value].title,
     key: new Date().toString(),
-    icon: buttonData.value[currentTab.value].icon,
+    icon: buttonData.value[currentTabForBarchart.value].icon,
     chartOptions: {
       chart: {
         parentHeightOffset: 0,
@@ -95,7 +96,7 @@ const chartConfigs = computed(() => {
           right: -10,
         },
       },
-      colors: chartLabel.value[currentTab.value].map((value, index, arr) => {
+      colors: chartLabel.value[currentTabForBarchart.value].map((value, index, arr) => {
         if (index == highlightedIndex.value) {
           return currentTheme.primary
         }
@@ -118,7 +119,7 @@ const chartConfigs = computed(() => {
       tooltip: { enabled: false },
       xaxis: {
         categories: [
-          ...chartLabel.value[currentTab.value],
+          ...chartLabel.value[currentTabForBarchart.value],
         ],
         axisBorder: {
           show: true,
@@ -177,7 +178,7 @@ const chartConfigs = computed(() => {
     },
     series: [{
       data: [
-        ...chartData.value[currentTab.value],
+        ...chartData.value[currentTabForBarchart.value],
       ],
     }],
   }
@@ -199,6 +200,7 @@ const variablesToWatch = [
 // Create a watch statement for each variable
 variablesToWatch.forEach(variableName => {
   watch(() => eval(variableName), newTotalQuery => {
+    currentTabForBarchart.value = currentTab.value
     console.log("-------------------------------------");
     console.log(newTotalQuery)
     let stat = chartConfigs.value
@@ -228,10 +230,10 @@ variablesToWatch.forEach(variableName => {
     stat.series[0].data.length = 0
     stat.chartOptions.xaxis.categories.length = 0
     stat.chartOptions.colors[beggestIndex] = vuetifyTheme.current.value.colors.primary
-    chartLabel.value[currentTab.value].length = 0
-    chartData.value[currentTab.value].length = 0
-    chartLabel.value[currentTab.value] = Array.from(Object.keys(convertedObject))
-    chartData.value[currentTab.value] = Array.from(Object.values(convertedObject))
+    chartLabel.value[currentTabForBarchart.value].length = 0
+    chartData.value[currentTabForBarchart.value].length = 0
+    chartLabel.value[currentTabForBarchart.value] = Array.from(Object.keys(convertedObject))
+    chartData.value[currentTabForBarchart.value] = Array.from(Object.values(convertedObject))
     highlightedIndex.value = beggestIndex
   })
 })
