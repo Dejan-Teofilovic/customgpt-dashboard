@@ -42,31 +42,31 @@ const message = ref('I like apples')
 const statistics = ref([
   {
     title: 'Queries',
-    stats: '0',
+    stats: globalStore.totalQueryCount,
     icon: 'custom-message-circle-2',
     color: 'primary',
   },
   {
     title: 'Response End Time',
-    stats: '0',
+    stats: parseFloat(globalStore.avgResponseEndTime).toFixed(1) + "s",
     icon: 'custom-prompt',
     color: 'info',
   },
   {
     title: 'Response Start Time',
-    stats: '0',
+    stats: parseFloat(globalStore.avgResponseStartTime).toFixed(1) + "s",
     icon: 'custom-clock',
     color: 'warn',
   },
   {
     title: 'Inputs Words',
-    stats: '0',
+    stats: globalStore.avgQueryInputWord,
     icon: 'custom-users',
     color: 'error',
   },
   {
     title: 'Output Words',
-    stats: '0',
+    stats: globalStore.avgQueryOutputWord,
     icon: 'custom-users',
     color: 'error',
   },

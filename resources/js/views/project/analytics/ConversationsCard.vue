@@ -35,19 +35,19 @@ const globalStore = useGlobalStore()
 const statistics = ref([
   {
     title: 'Conversations',
-    stats: '0',
+    stats: globalStore.totalConversationCount,
     icon: 'custom-message-circle-2',
     color: 'primary',
   },
   {
     title: 'Queries per conversation',
-    stats: '0',
+    stats: parseFloat(globalStore.avgQueryPerConversation).toFixed(1),
     icon: 'custom-users',
     color: 'error',
   },
   {
     title: 'Conversation Time',
-    stats: '0',
+    stats: parseFloat(globalStore.avgTimePerConversation).toFixed(1),
     icon: 'custom-prompt',
     color: 'info',
   },
