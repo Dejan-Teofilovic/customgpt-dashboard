@@ -18,6 +18,7 @@ const salesByCountries = ref([
     avatarImg: usFlag,
     stats: '$8,567k',
     subtitle: 'United States',
+    // profitLoss: globalStore.userLocation['United States'] == null ? 0 : globalStore.userLocation['United States'],
     profitLoss: 0,
   },
   {
