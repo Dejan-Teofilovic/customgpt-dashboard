@@ -60,13 +60,13 @@ const statistics = ref([
   },
   {
     title: 'Inputs Words',
-    stats: globalStore.avgQueryInputWord,
+    stats: parseInt(globalStore.avgQueryInputWord),
     icon: 'custom-users',
     color: 'error',
   },
   {
     title: 'Output Words',
-    stats: globalStore.avgQueryOutputWord,
+    stats: parseInt(globalStore.avgQueryOutputWord),
     icon: 'custom-users',
     color: 'error',
   },
