@@ -17,6 +17,10 @@ class GetAvgInputWordsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /* The code snippet `protected ; protected ; protected ;`
+    declares three protected properties in the `GetAvgInputWordsJob` class. These properties are
+    used to store the values passed to the constructor of the class. */
+
     protected $startDateTime;
     protected $endDateTime;
     protected $showAll;
@@ -33,10 +37,10 @@ class GetAvgInputWordsJob implements ShouldQueue
         $this->showAll = $showAll;
     }
 
+
     /**
-     * Execute the job.
-     *
-     * @return void
+     * The handle function calculates the average word count of user queries either for all records or
+     * within a specified date range and dispatches an event with the result.
      */
     public function handle()
     {

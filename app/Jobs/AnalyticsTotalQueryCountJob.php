@@ -16,6 +16,9 @@ class AnalyticsTotalQueryCountJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /* The lines `protected ;`, `protected ;`, and `protected ;` are
+    declaring protected properties in the `AnalyticsTotalQueryCountJob` class. These properties are
+    used to store the values passed to the constructor when creating an instance of the class. */
     protected $startDateTime;
     protected $endDateTime;
     protected $showAll;
@@ -37,6 +40,15 @@ class AnalyticsTotalQueryCountJob implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     */
+    /**
+     * The function handles a query count based on certain conditions and dispatches an event with the
+     * result.
+     * 
+     * @return the result of the query count. If the `` flag is set, it returns the count of
+     * all prompt_histories records. If the `` and `` variables are set, it
+     * returns the count of prompt_histories records created between those two dates. If neither
+     * condition is met, it dispatches a MyEvent with the result "failed".
      */
     public function handle()
     {

@@ -1189,6 +1189,18 @@ class AnalyticsController extends Controller
         return 'Dispatcher has been started!';
     }
 
+    /**
+     * The function dispatches multiple jobs to retrieve various statistics and data based on the
+     * provided start and end date/time, and returns a message indicating that the dispatcher has been
+     * started.
+     * 
+     * @param Request request The `` parameter is an instance of the `Request` class, which
+     * represents an HTTP request. It contains information about the request, such as the request
+     * method, headers, and input data. In this code, it is used to retrieve the values of the `start`,
+     * `end`, and
+     * 
+     * @return the string 'Dispatcher has been started!'.
+     */
     public function getall(Request $request)
     {
         $startDateTime = $request->input('start');
