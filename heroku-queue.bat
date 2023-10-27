@@ -8,11 +8,3 @@ start cmd /k heroku run php artisan queue:work --daemon
 start cmd /k heroku run php artisan queue:work --daemon
 start cmd /k heroku run php artisan queue:work --daemon
 start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
-start cmd /k heroku run php artisan queue:work --daemon
