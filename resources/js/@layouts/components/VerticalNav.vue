@@ -179,10 +179,11 @@ const handleNavScroll = evt => {
   .nav-header {
     display: flex;
     align-items: center;
+    justify-content: space-around;
 
     .header-action {
       cursor: pointer;
-      font-size: 1.5rem;
+      font-size: 1.5rem !important;
     }
   }
 
@@ -224,7 +225,7 @@ const handleNavScroll = evt => {
     -webkit-background-clip: text;
     background-image: linear-gradient(to right, #6d7cff, #ff51ff); // Define your gradient colors
     color: transparent; // Make the original text color transparent
-    font-size: 20px; // Adjust the font size as needed
+    font-size: 20px !important;// Adjust the font size as needed
   }
 
   // 👉 Overlay nav

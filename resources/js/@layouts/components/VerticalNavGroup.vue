@@ -39,7 +39,7 @@ const isAnyChildOpen = children => {
     let result = openGroups.value.includes(child.title)
     if ('children' in child)
       result = isAnyChildOpen(child.children) || result
-    
+
     return result
   })
 }
@@ -119,36 +119,38 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
         class="nav-item-icon"
       />
       <TransitionGroup name="transition-slide-x">
-        <!-- 👉 Title -->
-        <Component
-          :is=" config.app.enableI18n ? 'i18n-t' : 'span'"
-          v-bind="dynamicI18nProps(item.title, 'span')"
-          v-show="!hideTitleAndBadge"
-          key="title"
-          class="nav-item-title"
-        >
-          {{ item.title }}
-        </Component>
+        <div key="transition_id1">
+          <!-- 👉 Title -->
+          <Component
+            :is=" config.app.enableI18n ? 'i18n-t' : 'span'"
+            v-bind="dynamicI18nProps(item.title, 'span')"
+            v-show="!hideTitleAndBadge"
+            key="title"
+            class="nav-item-title"
+          >
+            {{ item.title }}
+          </Component>
 
-        <!-- 👉 Badge -->
-        <Component
-          :is="config.app.enableI18n ? 'i18n-t' : 'span'"
-          v-bind="dynamicI18nProps(item.badgeContent, 'span')"
-          v-show="!hideTitleAndBadge"
-          v-if="item.badgeContent"
-          key="badge"
-          class="nav-item-badge"
-          :class="item.badgeClass"
-        >
-          {{ item.badgeContent }}
-        </Component>
-        <Component
-          :is="config.app.iconRenderer || 'div'"
-          v-show="!hideTitleAndBadge"
-          v-bind="config.icons.chevronRight"
-          key="arrow"
-          class="nav-group-arrow"
-        />
+          <!-- 👉 Badge -->
+          <Component
+            :is="config.app.enableI18n ? 'i18n-t' : 'span'"
+            v-bind="dynamicI18nProps(item.badgeContent, 'span')"
+            v-show="!hideTitleAndBadge"
+            v-if="item.badgeContent"
+            key="badge"
+            class="nav-item-badge"
+            :class="item.badgeClass"
+          >
+            {{ item.badgeContent }}
+          </Component>
+          <Component
+            :is="config.app.iconRenderer || 'div'"
+            v-show="!hideTitleAndBadge"
+            v-bind="config.icons.chevronRight"
+            key="arrow"
+            class="nav-group-arrow"
+          />
+        </div>
       </TransitionGroup>
     </div>
     <TransitionExpand>

@@ -12,10 +12,22 @@ import vuetify from 'vite-plugin-vuetify'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // host: "127.0.0.1",
+  // port: 5173,
   server: {
     hmr: {
       host: "127.0.0.1",
+      overlay: {
+        warnings: true, // Show warnings in the overlay
+        errors: true,   // Show errors in the overlay
+        styles: {
+          background: 'red',
+          color: 'white',
+        },
+      },
     },
+
+    // hmr: false
   },
   plugins: [
     laravel({

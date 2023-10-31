@@ -47,7 +47,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
     // verticalNavUnPinned: { icon: 'tabler-circle' },
 
     verticalNavPinned: { icon: 'custom-indent-decrease' },
-    verticalNavUnPinned: { icon: 'custom-indent-decrease' },
+    verticalNavUnPinned: { icon: 'custom-indent-increase' },
     sectionTitlePlaceholder: { icon: 'tabler-separator' },
   },
 })
