@@ -17,6 +17,5 @@ class SessionsSeeder extends Seeder
      */
     public function run()
     {
-
     }
 }
